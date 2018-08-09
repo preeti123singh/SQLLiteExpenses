@@ -1,0 +1,84 @@
+﻿<%@ Master Language="C#" AutoEventWireup="true" CodeFile="Home.master.cs" Inherits="Home" %>
+
+<!DOCTYPE html>
+ <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<html xmlns="http://www.w3.org/1999/xhtml" style="height:100%;">
+<head runat="server"><title></title>
+
+    <script type='text/javascript' >
+        function NavigateToPage(page) {           
+            window.location.href = page;
+        }
+
+        
+</script>
+    <style type="text/css">
+       
+       /*.tdstyle{
+       
+    border-radius:10px;
+    -moz-border-radius:10px;
+    -webkit-border-radius:10px;*/
+ 
+/*}*/
+       .stye{
+           height:100%;
+       }
+        .display{
+            float:left;
+      padding:0px 20px;
+    
+        }
+    </style>
+
+</head>
+<body style="padding:0px;margin:0px;height:100%" class="stye">
+    
+    <div style="height:100%">
+       <table style="width:1000px;height:100%;margin:0% auto;box-shadow:0px 0px 10px 1px #5f5151;border:12px solid  gray;">  
+                    <tr style="height:150px">
+                       <%-- <td style="background-color:white;box-shadow:0px 0px 20px 3px #5f5151;width:5%;height:5%;" class="tdstyle">
+                            <div>
+                            <img src="Pics/10bitssmallest.bmp" class="auto-style1" />
+                             </div>
+                        </td>--%>  
+                        <td  style="text-align: center;" class="tdstyle"> 
+                          
+                             <div class="display" style="width:330px;padding:0px;text-align:left;">
+                            <img src="Pics/10bitssmallest.bmp" />
+                             </div>
+                            <div class="display" style="width:333px;"><h1 style="color:#880000">Expenses</h1></div>
+                            <div style="float:right;width:333px;width:80px;">
+                                <img src="Pics/logout.jpg"  onclick='NavigateToPage("Login.aspx")' />
+                               <%-- <a href="Login.aspx" style="color:blue;">Logout</a>--%>
+                           <%-- <asp:ImageButton ID="ImageButton1"  ImageUrl="Pics/logout.jpg" OnClick='NavigateToPage(logout.cshtml)' runat="server" />--%></div>
+                               
+                        </td> 
+                        
+                    </tr>  
+                    <tr>  
+                       <%-- <td style="background-color:#f89b9b;" class="tdstyle">  
+                           
+                        </td> --%> 
+                       <%-- 
+                        <td style="box-shadow:0px 0px 20px 3px #5f5151; background-image:url(Pics/background-4.jpg); background-repeat:no-repeat; background-size:cover;" >  
+                            <asp:ContentPlaceHolder ID="heads" runat="server">  
+                                 <h1>Place content here</h1>
+                            </asp:ContentPlaceHolder>  
+                        </td>--%>
+                         <td>  
+                            <asp:ContentPlaceHolder ID="heads" runat="server">  
+                                 <h1>Place content here</h1>
+                            </asp:ContentPlaceHolder>  
+                        </td>  
+                        <%--<td style="background-color:#ddeac9;box-shadow:0px 0px 20px 3px #5f5151">
+                        <asp:ContentPlaceHolder ID="heads" runat="server">  
+                                 <h1>Place content here</h1>
+                            </asp:ContentPlaceHolder></td>--%>
+                    </tr>  
+                   
+                </table>  
+    </div>
+   
+</body>
+</html>
