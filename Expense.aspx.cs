@@ -100,6 +100,7 @@ public partial class Expense : System.Web.UI.Page
             Filename = "download.jpg";
             lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif extensions.";
             lbl_image.ForeColor = System.Drawing.Color.Red;
+            
         }
         return (Images);
     }
