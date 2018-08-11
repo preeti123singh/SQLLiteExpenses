@@ -95,6 +95,7 @@
 
          <div style="width: 1000px; margin: 0 auto; ">
                <asp:Image ID="Image1" runat="server" Height="200px" Width="200px" ImageAlign="right"  Visible="false"/>
+               <asp:Label ID="lbl_image" runat="server" Text=""></asp:Label>
         </div>
         <br />
     </form>

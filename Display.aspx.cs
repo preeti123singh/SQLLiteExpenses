@@ -6,15 +6,16 @@ using System.Web.UI;
 using System.Web.UI.WebControls;
 using System.Data.SqlClient;
 using System.Data;
+using System.Data.SQLite;
 
 public partial class Display : System.Web.UI.Page
 {
-    public SqlConnection con;
+    public SQLiteConnection con;
     DataSet ds = new DataSet();
     DataTable dt ;
     protected void Page_Load(object sender, EventArgs e)
     {
-        con = (SqlConnection)Session["connection"];
+        con = (SQLiteConnection)Session["connection"];
         
         if (!Page.IsPostBack)
         {
@@ -23,10 +24,10 @@ public partial class Display : System.Web.UI.Page
     }
     public void loaddata()
     {
-        
+       
         con.Open();
-        SqlCommand cmd = new SqlCommand("select top 1 * from tbl_expenses order by ID desc", con);
-        SqlDataAdapter adp = new SqlDataAdapter(cmd);
+        SQLiteCommand cmd = new SQLiteCommand("SELECT * FROM tbl_expenses ORDER BY ID DESC LIMIT 1", con);
+        SQLiteDataAdapter adp = new SQLiteDataAdapter(cmd);
         adp.Fill(ds);
         dt = ds.Tables[0];
       
@@ -48,8 +49,10 @@ public partial class Display : System.Web.UI.Page
     {
         con.Open();
         GridViewRow row = (GridViewRow)GridView1.Rows[e.RowIndex];
-        SqlCommand cmd = new SqlCommand("delete FROM tbl_expenses where id='" + Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value.ToString()) + "'", con);
-        cmd.ExecuteNonQuery();
+        using (SQLiteCommand cmd = new SQLiteCommand("delete FROM tbl_expenses where id='" + Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value.ToString()) + "'", con))
+        {
+            cmd.ExecuteNonQuery();
+        }
         dt = new DataTable();
         GridView1.DataSource = dt;
         GridView1.DataBind();
@@ -70,39 +73,58 @@ public partial class Display : System.Web.UI.Page
         //TextBox textImage = (TextBox)row.Cells[7].Controls[0];
         FileUpload FileUpload1 = (FileUpload)GridView1.Rows[e.RowIndex].FindControl("FileUpload1");
         string path = "/Upload/";
-        if (FileUpload1.HasFile)
-        {   
-            path += FileUpload1.FileName.Replace(" ","");
-            filename= FileUpload1.FileName.Replace(" ", "");
-            //save image in folder    
-            FileUpload1.SaveAs(MapPath(path));
-        }
-        else
+        string ext = System.IO.Path.GetExtension(FileUpload1.PostedFile.FileName).ToLower();
+        if (ext != null)
         {
-            // use previous user image if new image is not changed 
-            
-                Image img = (Image)GridView1.Rows[e.RowIndex].FindControl("img_user");
-            if (img.ImageUrl != "")
+            if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
-                path = img.ImageUrl;
-                int pos = Image1.ImageUrl.LastIndexOf("/") + 1;
-                filename = path.Substring(pos, path.Length - pos);
-                
+                if (FileUpload1.HasFile)
+                {
+                    path += FileUpload1.FileName.Replace(" ", "");
+                    filename = FileUpload1.FileName.Replace(" ", "");
+                    //save image in folder    
+                    FileUpload1.SaveAs(MapPath(path));
+                    lbl_image.Text = "";
+                }
+                else
+                {
+                    // use previous user image if new image is not changed 
+
+                    Image img = (Image)GridView1.Rows[e.RowIndex].FindControl("img_user");
+                    if (img.ImageUrl != "")
+                    {
+                        path = img.ImageUrl;
+                        int pos = Image1.ImageUrl.LastIndexOf("/") + 1;
+                        filename = path.Substring(pos, path.Length - pos);
+                        lbl_image.Text = "";
+                    }
+                    else
+                    {
+                        path = "/Upload/download.jpg";
+                        filename = "download.jpg";
+                        lbl_image.Text = "";
+                    }
+                }
             }
             else
             {
-                path= "/Upload/download.jpg";
+                path = "/Upload/download.jpg";
                 filename = "download.jpg";
+                lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif extensions.";
+                lbl_image.ForeColor = System.Drawing.Color.Red;
             }
         }
+       
 
 
         
         GridView1.EditIndex = -1;
         con.Open();
-        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd"); 
-        SqlCommand cmd = new SqlCommand("update tbl_expenses set Money='" + textMoney.Text + "',Payment='" + textPayment.Text + "',Description='" + textDescription.Text + "',Comments='" + textComment.Text + "',Image='" + path + "',Date='" + date + "',Filename='" + filename+ "' where id='" + id + "'", con);
-        cmd.ExecuteNonQuery();
+        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
+        using (SQLiteCommand cmd = new SQLiteCommand("update tbl_expenses set Money='" + textMoney.Text + "',Payment='" + textPayment.Text + "',Description='" + textDescription.Text + "',Comments='" + textComment.Text + "',Image='" + path + "',Date='" + date + "',Filename='" + filename + "' where id='" + id + "'", con))
+        {
+            cmd.ExecuteNonQuery();
+        }
         con.Close();
         loaddata();
     }

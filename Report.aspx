@@ -96,8 +96,7 @@
                             End Date:
                          <asp:TextBox ID="txt_Enddate" runat="server" ></asp:TextBox>
                          <asp:Button ID="btn_find" runat="server" OnClick="btn_find_Click" Text="Find" ValidationGroup="Require" />
-                            <asp:Button ID="btn_Excel" runat="server" Text="Excel Export" OnClick="btn_Excel_Click"  />
-                             <asp:Button ID="btn_Pdf" runat="server" Text="Pdf Export" OnClick="btn_Pdf_Click"  />
+                           
                          <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Please enter End Date" ControlToValidate="txt_Enddate" ValidationGroup="Require"  Display="None"></asp:RequiredFieldValidator> 
                          <ajaxToolkit:CalendarExtender ID="CalendarExtender2"  runat="server" TargetControlID="txt_Enddate" Format="dd/MM/yyyy" />
                          <asp:CompareValidator ID="cmpDates" ControlToValidate="txt_StartDate" ControlToCompare="txt_Enddate" Operator="LessThanEqual" Type="Date"  ValidationGroup="Require" ErrorMessage="Start date must be less than End date." runat="server"  Display="None"/>                         
@@ -129,11 +128,13 @@
         <div style="height:50px;">
 
             <asp:HyperLink ID="HyperLink1" runat="server" CssClass="link" NavigateUrl="~/Expense.aspx">Go to First Page</asp:HyperLink>
+             <asp:Button ID="btn_Excel" runat="server" Text="Excel Export" OnClick="btn_Excel_Click"  />
+                             <asp:Button ID="btn_Pdf" runat="server" Text="Pdf Export" OnClick="btn_Pdf_Click"  />
         </div>
     <div style="margin-top:100px;overflow:auto;height:500px"  id="autoScroll" runat="server" onscroll="javaascript:setScroll(this);">
        
-    
-        <asp:GridView ID="data_grid" runat="server" DataKeyNames="id" AutoGenerateColumns="False"   Width="100%"   ShowHeaderWhenEmpty="True" OnRowCancelingEdit="data_grid_RowCancelingEdit" OnRowDeleting="data_grid_RowDeleting" OnRowEditing="data_grid_RowEditing" OnRowUpdating="data_grid_RowUpdating" CellPadding="4" ForeColor="#333333" GridLines="None" >
+        <asp:Label ID="lbl_image" runat="server" Text=""></asp:Label>
+        <asp:GridView ID="data_grid" runat="server" DataKeyNames="id" AutoGenerateColumns="False"   Width="100%"   ShowHeaderWhenEmpty="True" OnRowCancelingEdit="data_grid_RowCancelingEdit" OnRowDeleting="data_grid_RowDeleting" OnRowEditing="data_grid_RowEditing" OnRowUpdating="data_grid_RowUpdating" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="data_grid_SelectedIndexChanged" >
             <AlternatingRowStyle BackColor="White" height="20px" ForeColor="#284775" />
             
             <Columns>

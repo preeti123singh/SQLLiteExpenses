@@ -12,20 +12,19 @@ using iTextSharp.text.pdf;
 using iTextSharp.text.html.simpleparser;
 using System.Text.RegularExpressions;
 using System.Drawing;
+using System.Data.SQLite;
 
 public partial class Report : System.Web.UI.Page
 {
 
-    public SqlConnection con;
-    public SqlDataAdapter adp;
+    public SQLiteConnection con;
+    public SQLiteDataAdapter adp;
     public DataSet ds;
     private static DataTable dt = new DataTable();
- 
-    public object ImageDataFactory { get; private set; }
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        con = (SqlConnection)Session["connection"];
+        con = (SQLiteConnection)Session["connection"];
         Page.ClientScript.RegisterStartupScript(typeof(Page), System.DateTime.Now.Ticks.ToString(), "scrollTo('" + autoScroll.ClientID + "');", true);
         if (data_grid.Rows.Count == 0)
         {
@@ -60,10 +59,10 @@ public partial class Report : System.Web.UI.Page
     {
         string query;
         var result = drp_month.Text;
-        query = "select * from tbl_expenses where MONTH(Date)='" + result + "'";
+        query = "select * from tbl_expenses where strftime('%m', Date)='" + result + "'";
         con.Open();
-        SqlCommand sqlcmd = new SqlCommand(query, con);
-        adp = new SqlDataAdapter(sqlcmd);
+        SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
+        adp = new SQLiteDataAdapter(sqlcmd);
         ds = new DataSet();
         adp.Fill(ds);
         dt = ds.Tables[0];
@@ -79,8 +78,10 @@ public partial class Report : System.Web.UI.Page
         dt.Rows.RemoveAt(e.RowIndex);
         Session["data_grid"] = dt;
         GridViewRow row = (GridViewRow)data_grid.Rows[e.RowIndex];
-        SqlCommand cmd = new SqlCommand("delete FROM tbl_expenses where id='" + Convert.ToInt32(data_grid.DataKeys[e.RowIndex].Values[0].ToString()) + "'", con);
-        cmd.ExecuteNonQuery();
+        using (SQLiteCommand cmd = new SQLiteCommand("delete FROM tbl_expenses where id='" + Convert.ToInt32(data_grid.DataKeys[e.RowIndex].Values[0].ToString()) + "'", con))
+        {
+            cmd.ExecuteNonQuery();
+        }
         loaddata();
         con.Close();
 
@@ -104,43 +105,62 @@ public partial class Report : System.Web.UI.Page
         TextBox textComment = (TextBox)row.Cells[6].Controls[0];
         FileUpload FileUpload1 = (FileUpload)data_grid.Rows[e.RowIndex].FindControl("FileUpload1");
         string path = "/Upload/";
-        if (FileUpload1.HasFile)
+        string ext = System.IO.Path.GetExtension(FileUpload1.PostedFile.FileName).ToLower();
+        if (ext != null)
         {
-            path += FileUpload1.FileName.Replace(" ", "");
-            filename = FileUpload1.FileName.Replace(" ", "");
-            //save image in folder    
-            FileUpload1.SaveAs(MapPath(path));
-        }
-        else
-        {
-            // use previous user image if new image is not changed 
-
-            System.Web.UI.WebControls.Image img = (System.Web.UI.WebControls.Image)data_grid.Rows[e.RowIndex].FindControl("img_user");
-            if (img.ImageUrl != "")
+            if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
-                path = img.ImageUrl;
-                int pos = img.ImageUrl.LastIndexOf("/") + 1;
-                filename = path.Substring(pos, path.Length - pos);
+                if (FileUpload1.HasFile)
+                {
+                    path += FileUpload1.FileName.Replace(" ", "");
+                    filename = FileUpload1.FileName.Replace(" ", "");
+                    //save image in folder    
+                    FileUpload1.SaveAs(MapPath(path));
+                    lbl_image.Text = "";
+                }
+                else
+                {
+                    // use previous user image if new image is not changed 
+
+                    System.Web.UI.WebControls.Image img = (System.Web.UI.WebControls.Image)data_grid.Rows[e.RowIndex].FindControl("img_user");
+                    if (img.ImageUrl != "")
+                    {
+                        path = img.ImageUrl;
+                        int pos = img.ImageUrl.LastIndexOf("/") + 1;
+                        filename = path.Substring(pos, path.Length - pos);
+                        lbl_image.Text = "";
+                    }
+                    else
+                    {
+                        path = "/Upload/download.jpg";
+                        filename = "download.jpg";
+                        lbl_image.Text = "";
+                    }
+                }
             }
             else
             {
                 path = "/Upload/download.jpg";
                 filename = "download.jpg";
+                lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif extensions.";
+                lbl_image.ForeColor = System.Drawing.Color.Red;
             }
         }
         var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
 
         con.Open();
 
-        SqlCommand cmd = new SqlCommand("update tbl_expenses set Money='" + textMoney.Text + 
-                                        "',Payment='" + textPayment.Text + 
-                                        "',Description='" + textDescription.Text + 
-                                        "',Comments='" + textComment.Text + 
-                                        "',Image='" + path + 
-                                        "',Filename='" + filename + 
-                                        "',Date='" + date + 
-                                        "' where id='" + id + "'", con);       
-        cmd.ExecuteNonQuery();
+        using (SQLiteCommand cmd = new SQLiteCommand("update tbl_expenses set Money='" + textMoney.Text +
+                                        "',Payment='" + textPayment.Text +
+                                        "',Description='" + textDescription.Text +
+                                        "',Comments='" + textComment.Text +
+                                        "',Image='" + path +
+                                        "',Filename='" + filename +
+                                        "',Date='" + date +
+                                        "' where id='" + id + "'", con))
+        {
+            cmd.ExecuteNonQuery();
+        }
         dt.Rows[row.RowIndex]["Money"] = textMoney.Text;
         dt.Rows[row.RowIndex]["Date"] = date;
         dt.Rows[row.RowIndex]["Payment"] = textPayment.Text;
@@ -166,8 +186,8 @@ public partial class Report : System.Web.UI.Page
         var Enddate = Convert.ToDateTime(txt_Enddate.Text).ToString("yyyy-MM-dd");
         query = "select * from tbl_expenses where date>= '" + Startdate + "' and " + "date<= '" + Enddate + "'";
         con.Open();
-        SqlCommand sqlcmd = new SqlCommand(query, con);
-        adp = new SqlDataAdapter(sqlcmd);
+        SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
+        adp = new SQLiteDataAdapter(sqlcmd);
         ds = new DataSet();
         adp.Fill(ds);
         dt = ds.Tables[0];
@@ -195,10 +215,10 @@ public partial class Report : System.Web.UI.Page
         {
             result = "0";
         }
-        query = "select * from tbl_expenses where Year(Date)='" + result + "'";
+        query = "select * from tbl_expenses where strftime('%Y', Date)='" + result + "'";
         con.Open();
-        SqlCommand sqlcmd = new SqlCommand(query, con);
-        adp = new SqlDataAdapter(sqlcmd);
+        SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
+        adp = new SQLiteDataAdapter(sqlcmd);
         ds = new DataSet();
         adp.Fill(ds);
         dt = ds.Tables[0];
@@ -441,6 +461,11 @@ public partial class Report : System.Web.UI.Page
     public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases)
     {
         throw new NotImplementedException();
+    }
+
+    protected void data_grid_SelectedIndexChanged(object sender, EventArgs e)
+    {
+
     }
 }
 

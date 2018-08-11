@@ -8,16 +8,17 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
+using System.Data.SQLite;
 
 public partial class Expense : System.Web.UI.Page
 {
-    public SqlConnection connection;
-    System.Configuration.Configuration rootWebConfig = System.Web.Configuration.WebConfigurationManager.OpenWebConfiguration("/CalculateExpense");
-    System.Configuration.ConnectionStringSettings connString;
+    public SQLiteConnection connection;
+
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        connection = (SqlConnection)Session["connection"];
+        connection = (SQLiteConnection)Session["connection"];
+    
         if (!Page.IsPostBack)
         {
             PopulateDropdown();
@@ -32,19 +33,21 @@ public partial class Expense : System.Web.UI.Page
         if (value != null)
         {
             string query;
-            query = "insert into tbl_payments (Payment) values('" + value + "')" ;
-            SqlCommand sqlcmd = new SqlCommand(query, connection);
-            SqlDataReader MyReader2;
-            connection.Open();
-            MyReader2 = sqlcmd.ExecuteReader();
+            query = "insert into tbl_payments (Payment) values('" + value + "')" ;           
+               connection.Open();
+                using (SQLiteCommand sqlcmd = new SQLiteCommand(query, connection))
+                {
+                    sqlcmd.ExecuteNonQuery();
+                }
+
             connection.Close();
         }
             string query1;
             DataSet ds = new DataSet();
             connection.Open();
             query1 = "select distinct(payment) from tbl_payments";
-            SqlCommand sqlcmd1 = new SqlCommand(query1, connection);
-            SqlDataAdapter da1 = new SqlDataAdapter(sqlcmd1);
+            SQLiteCommand sqlcmd1 = new SQLiteCommand(query1, connection);
+            SQLiteDataAdapter da1 = new SQLiteDataAdapter(sqlcmd1);
             da1.Fill(ds);
             //DataTable dt = ds.Tables[0];
             dropdownlist.DataSource= ds.Tables[0];
@@ -55,45 +58,14 @@ public partial class Expense : System.Web.UI.Page
     }
 
     
-    //public void GetConnectionString()
-    //{
-    //    try
-    //    {
-
-    //        if (rootWebConfig.ConnectionStrings.ConnectionStrings.Count > 0)
-    //        {
-    //            connString = rootWebConfig.ConnectionStrings.ConnectionStrings["Expenses"];
-    //            if (connection == null)
-    //            {
-    //                connection = new SqlConnection(connString.ToString());
-                    
-    //                Session["Connection"] = connection;
-    //                connection.Open();
-
-    //            }
-    //        }
-    //    }
-    //    catch (Exception e)
-    //    {
-    //        Page.ClientScript.RegisterStartupScript(Page.GetType(),
-    //            "MessageBox", "alert('" + e.Message + "');", true);
-    //    }
-
-    //    finally
-    //    {
-    //        if (connection != null && connection.State == ConnectionState.Open)
-    //        {
-    //            connection.Close();
-    //        }
-    //    }
-    //}
+    
     string Filename;
     public string GetPhotos() {
         string Images = "";
         //string ext="";
         string ext = System.IO.Path.GetExtension(this.FileUpload1.PostedFile.FileName).ToLower();
         if (ViewState["Filename"]!=null)
-        { string extension = ViewState["Filename"].ToString();
+        {   string extension = ViewState["Filename"].ToString();
             ext = "."+ extension.Substring(extension.LastIndexOf(".") + 1).ToLower();
         }
        
@@ -104,6 +76,7 @@ public partial class Expense : System.Web.UI.Page
                 Filename = FileUpload1.FileName.Replace(" ", "");
                 FileUpload1.PostedFile.SaveAs(Server.MapPath(("~/Upload/" + Filename)));
                 Images = "/Upload/" + Filename.ToString();
+                lbl_image.Text = "";
             }
             else
             {
@@ -111,11 +84,13 @@ public partial class Expense : System.Web.UI.Page
                 {
                     Images = ViewState["File"].ToString();
                     Filename = ViewState["Filename"].ToString();
+                    lbl_image.Text = "";
                 }
                 else
                 {
                     Images = "/Upload/download.jpg";
                     Filename = "download.jpg";
+                    lbl_image.Text = "";
                 }
             }
         }
@@ -133,30 +108,14 @@ public partial class Expense : System.Web.UI.Page
     {
         try
         {
-            DataSet ds = new DataSet("Expense");
-            //string query = "insert into tbl_expenses(Date,Money,Payment,Description,Comments,Image,Filename) values('" + Convert.ToDateTime(TextBox1.Text).ToString("yyyy-MM-dd") + "','"+txt_Money.Text+"','"+ dropdownlist.SelectedItem.Text+"','"+ txt_Description.Text+"','"+ txt_Comment.Text+"','"+ GetPhotos()+"','"+Filename+"')";
-            SqlCommand sqlcom = new SqlCommand("MasterInsertUpdateDelete", connection);
-           
-            //SqlDataReader MyReader2;
-            //connection.Open();
-            //MyReader2 = sqlcom.ExecuteReader();
-            //connection.Close();
+            string query = "insert into tbl_expenses(Date,Money,Payment,Description,Comments,Image,Filename) values('" + Convert.ToDateTime(TextBox1.Text).ToString("yyyy-MM-dd") + "','"+txt_Money.Text+"','"+ dropdownlist.SelectedItem.Text+"','"+ txt_Description.Text+"','"+ txt_Comment.Text+"','"+ GetPhotos()+"','"+Filename+"')";
+            connection.Open();
+            using (SQLiteCommand sqlcom = new SQLiteCommand(query, connection))
+            { 
+                        sqlcom.ExecuteNonQuery();
+            }
+            connection.Close();
 
-            sqlcom.CommandType = CommandType.StoredProcedure;
-            sqlcom.Parameters.AddWithValue("@Money", txt_Money.Text);
-            sqlcom.Parameters.AddWithValue("@Payment", dropdownlist.SelectedItem.Text);
-            sqlcom.Parameters.AddWithValue("@Comment", txt_Comment.Text);
-            sqlcom.Parameters.AddWithValue("@Description", txt_Description.Text);
-            sqlcom.Parameters.AddWithValue("@Image", GetPhotos());
-            sqlcom.Parameters.AddWithValue("@date", DateTime.Parse(TextBox1.Text));
-            sqlcom.Parameters.AddWithValue("@Filename", Filename);
-            sqlcom.Parameters.AddWithValue("@StatementType", "Insert");
-            SqlDataAdapter da = new SqlDataAdapter(sqlcom);
-            da.Fill(ds);
-            //string script = "alert(\"Data Submitted Sucessfully!\");";
-            //ClientScript.RegisterStartupScript(this.GetType(),
-            //                      "Alert", script,"window.location.reload();", true);
-            ClientScript.RegisterStartupScript( this.GetType(),"Alert", "alert('Data Submitted Sucessfully!')", true);
             Response.Redirect("Display.aspx");
         }
         catch(Exception es)
@@ -176,11 +135,13 @@ public partial class Expense : System.Web.UI.Page
 
     protected void btn_upload_Click(object sender, EventArgs e)
     {
+        ViewState["Filename"] = null;
         Image1.ImageUrl= GetPhotos();
         ViewState["File"] = Image1.ImageUrl;
         int pos = Image1.ImageUrl.LastIndexOf("/") + 1;
         Image1.ImageUrl.Substring(pos, Image1.ImageUrl.Length - pos);
         ViewState["Filename"]= Image1.ImageUrl.Substring(pos, Image1.ImageUrl.Length - pos);
+       
     }
 
 
