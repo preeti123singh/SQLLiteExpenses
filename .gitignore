@@ -8,6 +8,7 @@
 *.sln.docstates
 *.pdf
 upload/
+SQLlite/
 *.db
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs
