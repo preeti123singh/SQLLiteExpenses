@@ -32,23 +32,25 @@
 </head>
 <body style="padding:0px;">
     <form id="form1" runat="server">
-         
+  
         <div style="margin-top:100px;" >
-
+<asp:Label ID="lbl_image" runat="server" Text=""></asp:Label><asp:Label ID="lbl_vat" runat="server" Text=""></asp:Label>
            
-            <asp:GridView ID="GridView1" runat="server" Width="100%"   CellPadding="4" DataKeyNames="ID" ForeColor="#333333" GridLines="None" AutoGenerateColumns="False" OnRowDeleting="GridView1_RowDeleting" ShowHeaderWhenEmpty="True" OnRowEditing="GridView1_RowEditing" OnRowUpdated="GridView1_RowUpdated" OnRowUpdating="GridView1_RowUpdating" OnRowCancelingEdit="GridView1_RowCancelingEdit"  >
+            <asp:GridView ID="GridView1" runat="server" Width="100%"   CellPadding="4" DataKeyNames="ID" ForeColor="#333333" GridLines="None" AutoGenerateColumns="False" OnRowDeleting="GridView1_RowDeleting" ShowHeaderWhenEmpty="True" OnRowEditing="GridView1_RowEditing" OnRowUpdated="GridView1_RowUpdated" OnRowUpdating="GridView1_RowUpdating" OnRowCancelingEdit="GridView1_RowCancelingEdit" OnSelectedIndexChanged="GridView1_SelectedIndexChanged"  >
                 <AlternatingRowStyle BackColor="White" height="20px" ForeColor="#284775" />
                 <Columns>
                     <asp:CommandField ShowEditButton="true" ButtonType="Link"/>  
                         <asp:CommandField ShowDeleteButton="true" ButtonType="Link"/>
-                        <asp:BoundField DataField="Date" HeaderText="Date" ItemStyle-HorizontalAlign="Center" >
+                     
+                    <asp:BoundField DataField="Date" HeaderText="Date" ItemStyle-HorizontalAlign="Center" >
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>   
                 
-                     <asp:BoundField DataField="Money" HeaderText="Money" SortExpression="ESACCode" ItemStyle-HorizontalAlign="Center">
+                     <asp:BoundField DataField="AmountPaid" HeaderText="AmountPaid" SortExpression="ESACCode" ItemStyle-HorizontalAlign="Center">
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>
-                    <asp:BoundField DataField="Payment" HeaderText="Payment" SortExpression="WaiverCode" ItemStyle-HorizontalAlign="Center">
+                     
+                    <asp:BoundField DataField="payment" HeaderText="payment" SortExpression="WaiverCode" ItemStyle-HorizontalAlign="Center">
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>
                             <asp:BoundField DataField="Description" HeaderText="Description" SortExpression="RefundType" ItemStyle-HorizontalAlign="Center" >
@@ -57,11 +59,6 @@
                 <asp:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-HorizontalAlign="Center"> 
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>
-               <%-- <asp:BoundField DataField="Image" HeaderText="Image" ItemStyle-HorizontalAlign="Center" >
-                            <ItemStyle HorizontalAlign="Center"></ItemStyle>
-                    </asp:BoundField>--%>
-                
-                    
                     <asp:TemplateField HeaderText="Image" HeaderStyle-Width="200px">  
                 <ItemTemplate>  
                     <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="100px" />  
@@ -71,10 +68,38 @@
                     <br />  
                     <asp:FileUpload ID="FileUpload1" runat="server" />  
                 </EditItemTemplate>  
+                <HeaderStyle Width="200px"></HeaderStyle>
+                 </asp:TemplateField> 
+                    <asp:BoundField DataField="Item" HeaderText="Item" ItemStyle-HorizontalAlign="Center" >
+                            <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                     <asp:BoundField DataField="VATAmount" HeaderText="VAT Amount" SortExpression="ESACCode" ItemStyle-HorizontalAlign="Center">
+                            <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                      <asp:TemplateField HeaderText="VATReceipt" HeaderStyle-Width="200px">  
+                        <ItemTemplate>
+                      
+                             <%if(Value.Equals("pdf")) {%> 
 
-<HeaderStyle Width="200px"></HeaderStyle>
-            </asp:TemplateField> 
+                              <iframe id="ifDisplayPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="200px" height="150px"></iframe>                    
+                            
+                            <%}%>
 
+                            <%else%>
+                            
+                            <%{%> 
+                              <asp:Image ID="Image_Vat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="100px" />                      
+
+                            
+                            <% } %>
+                        </ItemTemplate>  
+                        <EditItemTemplate>  
+                        <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="100px" />  
+                         <br />  
+                        <asp:FileUpload ID="FileUpload2" runat="server" />  
+                        </EditItemTemplate>  
+                        <HeaderStyle Width="200px"></HeaderStyle>
+                       </asp:TemplateField>
                 </Columns>
                  <EmptyDataTemplate>Record Deleted</EmptyDataTemplate>
                 <EditRowStyle BackColor="#999999" />
@@ -91,12 +116,9 @@
         </div>
        
         <div style="width: 1000px; margin: 0 auto;">
-    <asp:HyperLink ID="HyperLink1" runat="server" CssClass="link" NavigateUrl="~/Expense.aspx">Go to First Page</asp:HyperLink></div>
+        <asp:HyperLink ID="HyperLink1" runat="server" CssClass="link" NavigateUrl="~/Expense.aspx">Go to First Page</asp:HyperLink></div>
 
-         <div style="width: 1000px; margin: 0 auto; ">
-               <asp:Image ID="Image1" runat="server" Height="200px" Width="200px" ImageAlign="right"  Visible="false"/>
-               <asp:Label ID="lbl_image" runat="server" Text=""></asp:Label>
-        </div>
+    
         <br />
     </form>
 </body>
