@@ -73,6 +73,8 @@ public partial class Report : System.Web.UI.Page
 
     protected void data_grid_RowDeleting(object sender, GridViewDeleteEventArgs e)
     {
+        lbl_image.Text = "";
+        lbl_vat.Text = "";
         con.Open();
         DataTable dt = (DataTable)Session["data_grid"];
         dt.Rows.RemoveAt(e.RowIndex);
@@ -93,6 +95,7 @@ public partial class Report : System.Web.UI.Page
         loaddata();
     }
     string filename;
+    string vatfilename;
     protected void data_grid_RowUpdating(object sender, GridViewUpdateEventArgs e)
     {
         int id = Convert.ToInt32(data_grid.DataKeys[e.RowIndex].Value.ToString());
@@ -100,7 +103,7 @@ public partial class Report : System.Web.UI.Page
         DataTable dt = (DataTable)Session["data_grid"];
         TextBox textDate = (TextBox)row.Cells[2].Controls[0];
         TextBox textMoney = (TextBox)row.Cells[3].Controls[0];
-        TextBox textPayment = (TextBox)row.Cells[4].Controls[0];
+        TextBox textpayment = (TextBox)row.Cells[4].Controls[0];
         TextBox textDescription = (TextBox)row.Cells[5].Controls[0];
         TextBox textComment = (TextBox)row.Cells[6].Controls[0];
         FileUpload FileUpload1 = (FileUpload)data_grid.Rows[e.RowIndex].FindControl("FileUpload1");
@@ -108,9 +111,10 @@ public partial class Report : System.Web.UI.Page
         string ext = System.IO.Path.GetExtension(FileUpload1.PostedFile.FileName).ToLower();
         if (ext != null)
         {
-            if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
-            {
+            
                 if (FileUpload1.HasFile)
+                {
+                if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
                 {
                     path += FileUpload1.FileName.Replace(" ", "");
                     filename = FileUpload1.FileName.Replace(" ", "");
@@ -118,6 +122,16 @@ public partial class Report : System.Web.UI.Page
                     FileUpload1.SaveAs(MapPath(path));
                     lbl_image.Text = "";
                 }
+                else
+                {
+
+                    path = "/Upload/download.jpg";
+                    filename = "download.jpg";
+                    lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif extensions.";
+                    lbl_image.ForeColor = System.Drawing.Color.Red;
+
+                }
+            }
                 else
                 {
                     // use previous user image if new image is not changed 
@@ -137,36 +151,79 @@ public partial class Report : System.Web.UI.Page
                         lbl_image.Text = "";
                     }
                 }
+           
+        }
+        TextBox textItem = (TextBox)row.Cells[8].Controls[0];
+        TextBox textVatAmount = (TextBox)row.Cells[9].Controls[0];
+        FileUpload VatFileUpload = (FileUpload)data_grid.Rows[e.RowIndex].FindControl("FileUpload2");
+        string Vatext = System.IO.Path.GetExtension(VatFileUpload.PostedFile.FileName).ToLower();
+        string Vatpath = "/Vat/";
+        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
+        if (VatFileUpload.HasFile)
+        {
+
+            if (Vatext == ".jpg" || Vatext == ".png" || Vatext == ".gif" || Vatext == ".jpeg" || Vatext == ".pdf")
+            {
+                Vatpath += VatFileUpload.FileName.Replace(" ", "");
+                vatfilename = VatFileUpload.FileName.Replace(" ", "");
+                //save image in folder    
+                VatFileUpload.SaveAs(MapPath(Vatpath));
+                lbl_vat.Text = "";
             }
             else
             {
-                path = "/Upload/download.jpg";
-                filename = "download.jpg";
-                lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif extensions.";
-                lbl_image.ForeColor = System.Drawing.Color.Red;
+                Vatpath = "/Upload/download.jpg";
+                vatfilename = "download.jpg";
+                lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
+                lbl_vat.ForeColor = System.Drawing.Color.Red;
+
             }
         }
-        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
+        else
+        {
+            // use previous user image if new image is not changed 
 
+            System.Web.UI.WebControls.Image img = (System.Web.UI.WebControls.Image)data_grid.Rows[e.RowIndex].FindControl("Image_EditVat");
+            if (img.ImageUrl != "")
+            {
+                Vatpath = img.ImageUrl;
+                //int pos = Image2.ImageUrl.LastIndexOf("/") + 1;
+                //vatfilename = Vatpath.Substring(pos, Vatpath.Length - pos);
+                lbl_vat.Text = "";
+            }
+            else
+            {
+                Vatpath = "/Upload/download.jpg";
+                vatfilename = "download.jpg";
+                lbl_vat.Text = "";
+            }
+        }
         con.Open();
 
-        using (SQLiteCommand cmd = new SQLiteCommand("update tbl_expenses set Money='" + textMoney.Text +
-                                        "',Payment='" + textPayment.Text +
+        using (SQLiteCommand cmd = new SQLiteCommand("update tbl_expenses set AmountPaid='" + textMoney.Text +
+                                        "',payment='" + textpayment.Text +
                                         "',Description='" + textDescription.Text +
                                         "',Comments='" + textComment.Text +
                                         "',Image='" + path +
                                         "',Filename='" + filename +
                                         "',Date='" + date +
+                                        "',Item='" + textItem.Text +
+                                        "',VatAmount='" + textVatAmount.Text +
+                                        "',VatReceipt='" + Vatpath +
+                                        "',VatFileName='"+ vatfilename +
                                         "' where id='" + id + "'", con))
         {
             cmd.ExecuteNonQuery();
         }
-        dt.Rows[row.RowIndex]["Money"] = textMoney.Text;
+        dt.Rows[row.RowIndex]["AmountPaid"] = textMoney.Text;
         dt.Rows[row.RowIndex]["Date"] = date;
-        dt.Rows[row.RowIndex]["Payment"] = textPayment.Text;
+        dt.Rows[row.RowIndex]["payment"] = textpayment.Text;
         dt.Rows[row.RowIndex]["Description"] = textDescription.Text;
         dt.Rows[row.RowIndex]["Comments"] = textComment.Text;
         dt.Rows[row.RowIndex]["Image"] = path;
+        dt.Rows[row.RowIndex]["Item"] = textItem.Text;
+        dt.Rows[row.RowIndex]["VatAmount"] = textVatAmount.Text;
+        dt.Rows[row.RowIndex]["VatReceipt"] = Vatpath;
         Session["data_grid"] = dt;
         data_grid.EditIndex = -1;
         con.Close();
@@ -274,9 +331,9 @@ public partial class Report : System.Web.UI.Page
             iTextSharp.text.Font font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12f, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLUE);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Date", font)));
             PdfTable1.AddCell(PdfPCell);
-            PdfPCell = new PdfPCell(new Phrase(new Chunk("Money", font)));
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("AmountPaid", font)));
             PdfTable1.AddCell(PdfPCell);
-            PdfPCell = new PdfPCell(new Phrase(new Chunk("Payment", font)));
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("payment", font)));
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Description", font)));
             PdfTable1.AddCell(PdfPCell);
@@ -332,7 +389,7 @@ public partial class Report : System.Web.UI.Page
             dt.Columns.Add("PageNo");
         }
         List<string> ImageStr = GetImagesInHTMLString(sw.ToString());
-        var unique_items = new HashSet<string>(ImageStr);
+        var unique_payments = new HashSet<string>(ImageStr);
         IDictionary<int, string> dict = new Dictionary<int, string>();
         Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
         var writer = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
@@ -341,13 +398,28 @@ public partial class Report : System.Web.UI.Page
         //Create object for image
         int startOfImages= GetLastPageNoExpenseTableInPdf()+1;
 
-        foreach (string s in unique_items)
+        foreach (string s in unique_payments)
         {
             int pos = s.LastIndexOf("\\") + 1;
             filename = s.Substring(pos, s.Length - pos);
-            dict.Add(startOfImages, filename);
-            startOfImages++;
-        }      
+            string ext = "." + filename.Substring(filename.LastIndexOf(".") + 1).ToLower();
+            if (ext == "pdf")
+            {
+                PdfReader pdfReader = new PdfReader(s);
+                int numberOfPages = pdfReader.NumberOfPages;
+               
+                dict.Add(startOfImages + numberOfPages - 1, filename);
+
+            }
+            else
+            {
+                dict.Add(startOfImages, filename);
+                startOfImages++;
+            }
+        } 
+        
+
+             
             
         for (int rows = 0; rows < dt.Rows.Count; rows++)
         {
@@ -361,6 +433,8 @@ public partial class Report : System.Web.UI.Page
                 {
                     dt.Rows[rows]["PageNo"] = Key;
                 }
+
+
             }
         }
 
@@ -373,17 +447,21 @@ public partial class Report : System.Web.UI.Page
             iTextSharp.text.Font font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12f, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLUE);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Date", font)));
             PdfTable1.AddCell(PdfPCell);
-            PdfPCell = new PdfPCell(new Phrase(new Chunk("Money", font)));
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("AmountPaid", font)));
             PdfTable1.AddCell(PdfPCell);
-            PdfPCell = new PdfPCell(new Phrase(new Chunk("Payment", font)));
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("payment", font)));
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Description", font)));
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Comments", font)));
             PdfTable1.AddCell(PdfPCell);
-            //PdfPCell = new PdfPCell(new Phrase(new Chunk("Image", font)));
-            //PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Link", font)));
+            PdfTable1.AddCell(PdfPCell);         
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("Item", font)));
+            PdfTable1.AddCell(PdfPCell);
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("VatAmount", font)));
+            PdfTable1.AddCell(PdfPCell);
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("VatReceipt", font)));
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("PageNo", font)));
             PdfTable1.AddCell(PdfPCell);
@@ -417,7 +495,7 @@ public partial class Report : System.Web.UI.Page
         pdfDoc.NewPage();      
         pdfDoc.Add(PdfTable1);
      
-        foreach (string s in unique_items)
+        foreach (string s in unique_payments)
         {
            
             pdfDoc.NewPage(); 
@@ -447,13 +525,24 @@ public partial class Report : System.Web.UI.Page
     private List<string> GetImagesInHTMLString(string htmlString)
     {
         List<string> images = new List<string>();
-        string pattern = "<img.+?src=[\"'](.+?)[\"'].*?>";
+        string pattern = "<img.+?id=[\"'](.+?)[\"'].*?src=[\"'](.+?)[\"'].*?>";
+       
         Regex rgx = new Regex(pattern, RegexOptions.IgnoreCase);
         MatchCollection matches = rgx.Matches(htmlString);
         for (int i = 0, l = matches.Count; i < l; i++)
         {
-            string modifyStr = matches[i].Groups[1].Value.Remove(0, 7);
-            images.Add(Server.MapPath("Upload") + modifyStr.Replace("/", "\\").Replace("%20", " "));
+            string idStr = matches[i].Groups[1].Value;
+            if (idStr.Contains("Image1"))
+            {
+                string modifyStr = matches[i].Groups[2].Value.Remove(0, 7);
+                images.Add(Server.MapPath("Upload") + modifyStr.Replace("/", "\\").Replace("%20", " "));
+            }
+            else
+            {
+                string modifyVatStr = matches[i].Groups[2].Value.Remove(0, 4);
+                images.Add(Server.MapPath("Vat") + modifyVatStr.Replace("/", "\\").Replace("%20", " "));
+            }
+            
         }
         return images;
     }

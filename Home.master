@@ -47,7 +47,7 @@
                              <div class="display" style="width:330px;padding:0px;text-align:left;">
                             <img src="Pics/10bitssmallest.bmp" />
                              </div>
-                            <div class="display" style="width:333px;"><h1 style="color:#880000">Expenses</h1></div>
+                            <div class="display" style="width:333px;"><h1 style="color:#880000"></h1></div>
                             <div style="float:right;width:333px;width:80px;">
                                 <img src="Pics/logout.jpg"  onclick='NavigateToPage("Login.aspx")' />
                                <%-- <a href="Login.aspx" style="color:blue;">Logout</a>--%>

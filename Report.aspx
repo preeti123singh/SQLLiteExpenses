@@ -131,9 +131,10 @@
              <asp:Button ID="btn_Excel" runat="server" Text="Excel Export" OnClick="btn_Excel_Click"  />
                              <asp:Button ID="btn_Pdf" runat="server" Text="Pdf Export" OnClick="btn_Pdf_Click"  />
         </div>
+        <div><asp:Label ID="lbl_image" runat="server" Text=""></asp:Label><asp:Label ID="lbl_vat" runat="server" Text=""></asp:Label></div>
     <div style="margin-top:100px;overflow:auto;height:500px"  id="autoScroll" runat="server" onscroll="javaascript:setScroll(this);">
        
-        <asp:Label ID="lbl_image" runat="server" Text=""></asp:Label>
+        
         <asp:GridView ID="data_grid" runat="server" DataKeyNames="id" AutoGenerateColumns="False"   Width="100%"   ShowHeaderWhenEmpty="True" OnRowCancelingEdit="data_grid_RowCancelingEdit" OnRowDeleting="data_grid_RowDeleting" OnRowEditing="data_grid_RowEditing" OnRowUpdating="data_grid_RowUpdating" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="data_grid_SelectedIndexChanged" >
             <AlternatingRowStyle BackColor="White" height="20px" ForeColor="#284775" />
             
@@ -145,10 +146,10 @@
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>   
                 
-                     <asp:BoundField DataField="Money" HeaderText="Money"  ItemStyle-HorizontalAlign="Center">
+                     <asp:BoundField DataField="AmountPaid" HeaderText="AmountPaid"  ItemStyle-HorizontalAlign="Center">
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>
-                    <asp:BoundField DataField="Payment" HeaderText="Payment"  ItemStyle-HorizontalAlign="Center">
+                    <asp:BoundField DataField="payment" HeaderText="payment"  ItemStyle-HorizontalAlign="Center">
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>
                             <asp:BoundField DataField="Description" HeaderText="Description"  ItemStyle-HorizontalAlign="Center" >
@@ -157,21 +158,37 @@
                 <asp:BoundField DataField="Comments" HeaderText="Comments" ItemStyle-HorizontalAlign="Center"> 
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                  </asp:BoundField>
-             <%--<asp:BoundField DataField="Image" HeaderText="Image" ItemStyle-HorizontalAlign="Center" >
-                            <ItemStyle HorizontalAlign="Center"></ItemStyle>
+             <%--<asp:BoundField DataField="Image" HeaderText="Image" paymentStyle-HorizontalAlign="Center" >
+                            <paymentStyle HorizontalAlign="Center"></paymentStyle>
                     </asp:BoundField>--%>
                 <asp:TemplateField HeaderText="Image"  ItemStyle-Height = "50px" ItemStyle-Width = "70px">  
                 <ItemTemplate>  
-                    <asp:Image ID="Image1" runat="server" ImageUrl='<%#  Eval("Image") %>' Height="50px" Width="70px" />  
+                    <asp:Image ID="Image1" runat="server" ImageUrl='<%#  Eval("Image") %>' Height="50px" Width="50px" />  
                 </ItemTemplate>  
                 <EditItemTemplate>  
                     <asp:Image ID="img_user" runat="server" ImageUrl='<%#  Eval("Image")%>' Height="80px" Width="70px" />  
                     <br />  
                     <asp:FileUpload ID="FileUpload1" runat="server" />  
                 </EditItemTemplate>  
-
-
             </asp:TemplateField> 
+                 <asp:BoundField DataField="Item" HeaderText="Item" ItemStyle-HorizontalAlign="Center" >
+                            <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                     <asp:BoundField DataField="VATAmount" HeaderText="VAT Amount" SortExpression="ESACCode" ItemStyle-HorizontalAlign="Center">
+                            <ItemStyle HorizontalAlign="Center"></ItemStyle>
+                    </asp:BoundField>
+                   
+                 <asp:TemplateField HeaderText="VATReceipt"  ItemStyle-Height = "50px" ItemStyle-Width = "70px">  
+                        <ItemTemplate>  
+                        <asp:Image ID="Image_Vat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="50px" Width="50px" />  
+                        </ItemTemplate>  
+                        <EditItemTemplate>  
+                        <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="70px" />  
+                         <br />  
+                        <asp:FileUpload ID="FileUpload2" runat="server" />  
+                        </EditItemTemplate>  
+                        <HeaderStyle Width="200px"></HeaderStyle>
+                       </asp:TemplateField>
              </Columns>
              
             <EditRowStyle BackColor="#999999" />

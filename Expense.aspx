@@ -34,19 +34,16 @@
             
         }
         .btnbox{
-             border-top-left-radius: 4px;
-            border-top-right-radius: 4px;
-            border-bottom-left-radius: 4px;
-            border-bottom-right-radius: 4px;
-            float:right;
-              margin-top:20px;
+            border-radius:4px;
+           display: inline-block;
+            margin-top:20px;
         }
     .auto-style1 {
         height: 29px;
     }
     #form1{
         font-family:Bahnschrift SemiBold;
-        font-size:20px;
+        /*font-size:20px;*/
         /*color:#0e5566;*/ 
     }
     
@@ -68,29 +65,38 @@
             border-bottom-left-radius: 4px;
             border-bottom-right-radius: 4px;
    }
+        .auto-style2 {
+            height: 84px;
+        }
+        .align-centre{
+            text-align:center;
+        }
+        .divstyle{
+            /*border-top: 1px dotted red;*/
+
+        }
     </style>
        
      <script type="text/javascript">
-
-        //window.onload = function () {
-        //    SetHeight();
-           
-        //};
-        //function SetHeight() {
-            
-        //var x =  screen.height + "px";
-        //document.getElementById("form1").style.height = x;
-        //}
-       
+        
+        
     </script>
 
 </head>
 <body style="padding:0px;">
     <form id="form1" runat="server" class="tdstyle">
+           <h1 style="text-align:center;color:#880000">Expense</h1>
+        <div class="divstyle">
             
-        <div class="tdstyle">
-
             <table style="margin:0 auto;width:50%" >
+                <tr><td>Item Type</td>
+                    <td class="auto-style1">
+                        <asp:DropDownList ID="drp_item" runat="server"  CssClass="txtbox" Font-Names="Bahnschrift SemiBold"></asp:DropDownList>
+                    
+                        <asp:Button ID="btn_item" runat="server" Text="Add New Type" Font-Names="Bahnschrift SemiBold" OnClick="btn_item_Click"/>
+                        <asp:Button ID="btn_item_hidden" runat="Server" style="display:none" OnClick="btn_item_hidden_Click"  />
+                    </td>
+                </tr>
                 <tr>
                     <td >
                        
@@ -108,33 +114,34 @@
                                       
                 </tr>
                 <tr>
-                    <td >
-                        Amount
-                       <%-- <asp:Label ID="lbl_Money" runat="server" Text="Amount" Font-Names="Bahnschrift SemiBold" ></asp:Label>--%>
+                    <td class="auto-style2" >
+                        Amount Paid
+                      
                     </td>
-                    <td>
+                    <td class="auto-style2">
                       <asp:TextBox ID="txt_Money" runat="server" AutoCompleteType="Disabled" MaxLength="50" CssClass="txtbox" ></asp:TextBox>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Please enter Amount" ControlToValidate="txt_Money" ValidationGroup="Require" ForeColor="#FF3300" Font-Size="Small"></asp:RequiredFieldValidator> 
                           <asp:RegularExpressionValidator id="RegularExpressionValidator1"
                    ControlToValidate="txt_Money" ForeColor="#FF3300"
                    ValidationExpression="\d+" ValidationGroup="Require"
-                   Display="Static"
+                   Display="Static" Font-Size="Small"
                    EnableClientScript="true"
                    ErrorMessage="Please enter numbers only"
                    runat="server"/>  
                     </td>
                 </tr>
+                
                 <tr>
                     <td class="auto-style1" >
-                        Payment
-                        <%--<asp:Label ID="lbl_pym" runat="server" Text="Payment" Font-Names="Bahnschrift SemiBold" ></asp:Label>--%>
+                        payment
+                        <%--<asp:Label ID="lbl_pym" runat="server" Text="payment" Font-Names="Bahnschrift SemiBold" ></asp:Label>--%>
                     </td>
                     <td class="auto-style1" >
                         
                         <asp:DropDownList ID="dropdownlist" runat="server" CssClass="txtbox" Font-Names="Bahnschrift SemiBold">
                             
                         </asp:DropDownList>                  
-                         <asp:Button ID="btn_payment" runat="server" Text="Add Payment" Height="22px" Width="95px"  OnClick="btn_payment_Click" CssClass="txtbox" Font-Names="Bahnschrift SemiBold" />
+                         <asp:Button ID="btn_payment" runat="server" Text="Add New Payment"   OnClick="btn_payment_Click"  Font-Names="Bahnschrift SemiBold" />
                         <asp:Button ID="btnHidden" runat="Server" style="display:none" OnClick="btnHidden_Click" />
                        
                     </td>
@@ -158,6 +165,8 @@
                         <asp:TextBox ID="txt_Comment" runat="server" Height="100px" TextMode="MultiLine" AutoCompleteType="Disabled" CssClass="txtbox"></asp:TextBox>
                     </td>
                 </tr>
+                 
+               
                 <tr>
                     <td style="vertical-align:sub;">Receipt(Jpg/Png)
                         <%--<asp:Label ID="lbl_Image" runat="server" Text="Receipt(Jpg/Png)" Font-Names="Bahnschrift SemiBold"  ></asp:Label>--%>
@@ -167,9 +176,9 @@
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
                             <ContentTemplate>
                                 <asp:FileUpload ID="FileUpload1" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold" accept=".png,.jpg,.jpeg,.gif"/>
-                                <asp:Button ID="btn_upload" runat="server" Text="Show Image" OnClick="btn_upload_Click" CssClass="btnbox" Font-Names="Bahnschrift SemiBold" />
+                                <asp:Button ID="btn_upload" runat="server" Text="Show Image" OnClick="btn_upload_Click"  Font-Names="Bahnschrift SemiBold"/>
                                 <asp:Label ID="lbl_image" runat="server" Text="" Font-Size="Small" ></asp:Label> 
-                                <asp:Image ID="Image1" runat="server" Height="150px" Width="200px" ImageAlign="Middle" />
+                                <asp:Image ID="Image1" runat="server"  ImageAlign="Middle" />
                                 
                                  <%-- <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="Only .jpg,.jpeg,gif,.png images are allowed." ValidationExpression="/^(([a-zA-Z]:)|(\\{2}\w+)\$?)(\\(\w[\w].*))+(.jpeg|.JPEG|.gif|.GIF| .png|.PNG)$/" ControlToValidate="FileUpload1"></asp:RegularExpressionValidator>--%>
                             </ContentTemplate>
@@ -179,20 +188,52 @@
                         </asp:UpdatePanel>
                     </td>
                 </tr>
+             
             </table>
+  
+           </div>
+            
+           <div style="margin-top: 5%;margin-bottom:5%;">
+               <h1 style="text-align:center;color:#880000">VAT</h1>
+                <table style="margin:0 auto;width:50%">
+                <tr>
+                    <td>VAT Amount</td>
+                    <td>
+                        <asp:TextBox ID="txt_Amount" runat="server" AutoCompleteType="Disabled" CssClass="txtbox"></asp:TextBox></td>
+                </tr>
+                <tr>
+                    <td>VAT Receipt</td>
+                    <td>
+                        <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
+                            <ContentTemplate>
+                        <asp:FileUpload ID="vat_fileupload" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold"/>
+                        <asp:Button ID="btn_vatupload" runat="server" Text="Show Image" OnClick="btn_vatupload_Click" Font-Names="Bahnschrift SemiBold" />
+                        <asp:Image ID="Img_Vat" runat="server" Font-Size="Small"/>
+                        <iframe id="myframe"  runat="server" width="0px" height="0px"></iframe>
+                        <asp:Label ID="lbl_vatImage" runat="server" Text=""></asp:Label>
+                            </ContentTemplate>
+                            <Triggers>
+                                <asp:PostBackTrigger ControlID="btn_vatupload" />
+                            </Triggers>
+                        </asp:UpdatePanel>
+                    </td>
+                  
+                </tr>
+                </table>
            
 
         </div>
 
-        <div style="margin:0 auto;width:300px;">
-             <table >
+        <div>
+             <table style="margin:0 auto;width:50%" >
               
                 <tr>
-                    <td>
-                        <asp:Button ID="btn_submit" runat="server" OnClick="btn_submit_Click" Text="Submit" CssClass="txtbox" Font-Names="Bahnschrift SemiBold" ValidationGroup="Require"/>
+                    <td style="text-align:right;">
+                        <asp:Button ID="btn_submit" runat="server" OnClick="btn_submit_Click" Text="Submit"  Font-Names="Bahnschrift SemiBold" ValidationGroup="Require"/>
                     </td>
                     <td>
-                        <asp:Button ID="btn_reports" runat="server" OnClick="btn_reports_Click" Text="Reports" CssClass="txtbox" Font-Names="Bahnschrift SemiBold"/>
+                        <asp:Button ID="btn_reports" runat="server" OnClick="btn_reports_Click" Text="Reports"  Font-Names="Bahnschrift SemiBold"/>
+                        <asp:Button ID="btn_reset" runat="server" Text="Reset" Font-Names="Bahnschrift SemiBold" OnClick="btn_reset_Click"/>
                     </td>
                      
                 </tr>

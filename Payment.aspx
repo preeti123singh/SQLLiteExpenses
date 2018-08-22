@@ -1,6 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="Payment.aspx.cs" Inherits="Payment"  %>
-
-
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeFile="payment.aspx.cs" Inherits="payment"  %>
 
 <!DOCTYPE html>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -29,9 +27,9 @@
     
         <table class="auto-style1">
             <tr>
-                <td><asp:Label ID="lbl_payment" runat="server" Text="Payment" Font-Names="Bahnschrift SemiBold"></asp:Label></td>
+                <td><asp:Label ID="lbl_payment" runat="server" Text="payment" Font-Names="Bahnschrift SemiBold"></asp:Label></td>
                 <td><asp:TextBox ID="txt_payment" runat="server" AutoCompleteType="disabled" CssClass="txtbox" height="25px"></asp:TextBox></td>
-                <td> <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="Please enter Payment methods." ControlToValidate="txt_payment" ValidationGroup="Require" ForeColor="#FF3300"></asp:RequiredFieldValidator> </td>
+                <td> <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="Please enter payment methods." ControlToValidate="txt_payment" ValidationGroup="Require" ForeColor="#FF3300"></asp:RequiredFieldValidator> </td>
             </tr>
             
             <tr>
