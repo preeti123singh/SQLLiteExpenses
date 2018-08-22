@@ -226,7 +226,6 @@
 
         <div>
              <table style="margin:0 auto;width:50%" >
-              
                 <tr>
                     <td style="text-align:right;">
                         <asp:Button ID="btn_submit" runat="server" OnClick="btn_submit_Click" Text="Submit"  Font-Names="Bahnschrift SemiBold" ValidationGroup="Require"/>
