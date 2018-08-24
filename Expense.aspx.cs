@@ -123,7 +123,9 @@ public partial class Expense : System.Web.UI.Page
                 if (ViewState["File"] != null)
                 {
                     Images = ViewState["File"].ToString();
-                    Filename = ViewState["Filename"].ToString();
+                    int pos = Images.LastIndexOf("/") + 1;
+                    string fileName = Images.Substring(pos, Images.Length - pos).ToString();
+                    Filename = fileName;
                     lbl_image.Text = "";
                 }
                 else

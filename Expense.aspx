@@ -208,9 +208,10 @@
                             <ContentTemplate>
                         <asp:FileUpload ID="vat_fileupload" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold"/>
                         <asp:Button ID="btn_vatupload" runat="server" Text="Show Image" OnClick="btn_vatupload_Click" Font-Names="Bahnschrift SemiBold" />
+                        <asp:Label ID="lbl_vatImage" runat="server" Text="" Font-Size="Small"></asp:Label>
                         <asp:Image ID="Img_Vat" runat="server" Font-Size="Small"/>
                         <iframe id="myframe"  runat="server" width="0px" height="0px"></iframe>
-                        <asp:Label ID="lbl_vatImage" runat="server" Text=""></asp:Label>
+                        
                             </ContentTemplate>
                             <Triggers>
                                 <asp:PostBackTrigger ControlID="btn_vatupload" />

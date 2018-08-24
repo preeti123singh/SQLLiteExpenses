@@ -108,8 +108,8 @@ public partial class Display : System.Web.UI.Page
                     path = img.ImageUrl;
                     int pos = path.LastIndexOf("/") + 1;
                     filename = path.Substring(pos, path.Length - pos);
-                    lbl_image.Text = "";
-            }
+                    //lbl_image.Text = "";
+                }
                     else
                     {
                         path = "/Upload/download.jpg";
@@ -155,14 +155,15 @@ public partial class Display : System.Web.UI.Page
                          Vatpath = img.ImageUrl;
                          int pos = Vatpath.LastIndexOf("/") + 1;
                         vatfilename = Vatpath.Substring(pos, Vatpath.Length - pos);
-                        lbl_vat.Text = "";
+                        //lbl_vat.Text = "";
                     }
                     else
                     {
-                        Vatpath = "/Upload/download.jpg";
-                        vatfilename = "download.jpg";
-                        lbl_vat.Text = "";
-                    }
+                         Vatpath = "/Upload/download.jpg";
+                         vatfilename = "download.jpg";
+                        lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
+                        lbl_vat.ForeColor = System.Drawing.Color.Red;
+                }
                 }
            
             

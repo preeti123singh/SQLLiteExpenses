@@ -39,8 +39,8 @@
             <asp:GridView ID="GridView1" runat="server" Width="100%"   CellPadding="4" DataKeyNames="ID" ForeColor="#333333" GridLines="None" AutoGenerateColumns="False" OnRowDeleting="GridView1_RowDeleting" ShowHeaderWhenEmpty="True" OnRowEditing="GridView1_RowEditing" OnRowUpdated="GridView1_RowUpdated" OnRowUpdating="GridView1_RowUpdating" OnRowCancelingEdit="GridView1_RowCancelingEdit" OnSelectedIndexChanged="GridView1_SelectedIndexChanged"  >
                 <AlternatingRowStyle BackColor="White" height="20px" ForeColor="#284775" />
                 <Columns>
-                    <asp:CommandField ShowEditButton="true" ButtonType="Link"/>  
-                        <asp:CommandField ShowDeleteButton="true" ButtonType="Link"/>
+                    <asp:CommandField ShowEditButton="true" ButtonType="Image"  EditImageUrl="~/Pics/NewEdit.png"  UpdateImageUrl="~/Pics/Update.png" CancelImageUrl="~/Pics/NewCancel.png" ItemStyle-Wrap="false"/>  
+                        <asp:CommandField ShowDeleteButton="true" ButtonType="Image"  DeleteImageUrl="~/Pics/NewDelete.jpg"  ItemStyle-Wrap="false"/>
                      
                     <asp:BoundField DataField="Date" HeaderText="Date" ItemStyle-HorizontalAlign="Center" >
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
@@ -61,10 +61,10 @@
                     </asp:BoundField>
                     <asp:TemplateField HeaderText="Image" HeaderStyle-Width="200px">  
                 <ItemTemplate>  
-                    <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="100px" />  
+                    <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="80px" />  
                 </ItemTemplate>  
                 <EditItemTemplate>  
-                    <asp:Image ID="img_user" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="100px" />  
+                    <asp:Image ID="img_user" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="80px" />  
                     <br />  
                     <asp:FileUpload ID="FileUpload1" runat="server" />  
                 </EditItemTemplate>  
@@ -94,7 +94,15 @@
                             <% } %>
                         </ItemTemplate>  
                         <EditItemTemplate>  
-                        <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="100px" />  
+                            <%if(Value.Equals("pdf")) {%>
+                            <iframe id="ifDisplayEditPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="200px" height="150px"></iframe>
+                            <%}%>
+
+                            <%else%>
+                            
+                            <%{%> 
+                        <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="100px" /> 
+                             <% } %> 
                          <br />  
                         <asp:FileUpload ID="FileUpload2" runat="server" />  
                         </EditItemTemplate>  
@@ -102,6 +110,7 @@
                        </asp:TemplateField>
                 </Columns>
                  <EmptyDataTemplate>Record Deleted</EmptyDataTemplate>
+              
                 <EditRowStyle BackColor="#999999" />
                 <FooterStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
                 <HeaderStyle BackColor="#5D7B9D" Font-Bold="True" ForeColor="White" />
