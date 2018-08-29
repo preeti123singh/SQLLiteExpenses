@@ -13,6 +13,7 @@ using iTextSharp.text.html.simpleparser;
 using System.Text.RegularExpressions;
 using System.Drawing;
 using System.Data.SQLite;
+using System.Web.UI.HtmlControls;
 
 public partial class Report : System.Web.UI.Page
 {
@@ -21,7 +22,7 @@ public partial class Report : System.Web.UI.Page
     public SQLiteDataAdapter adp;
     public DataSet ds;
     private static DataTable dt = new DataTable();
-
+    public string Value;
     protected void Page_Load(object sender, EventArgs e)
     {
         con = (SQLiteConnection)Session["connection"];
@@ -44,6 +45,7 @@ public partial class Report : System.Web.UI.Page
         data_grid.DataBind();
         if (data_grid.Rows.Count == 0)
         {
+            
             btn_Excel.Visible = false;
             btn_Pdf.Visible = false;
         }
@@ -66,6 +68,8 @@ public partial class Report : System.Web.UI.Page
         ds = new DataSet();
         adp.Fill(ds);
         dt = ds.Tables[0];
+        string fileName = dt.Rows[0]["VatReceipt"].ToString();
+        Value = fileName.Substring(fileName.LastIndexOf(".") + 1).ToLower();
         Session["data_grid"] = dt;
         loaddata();
         con.Close();
@@ -116,19 +120,30 @@ public partial class Report : System.Web.UI.Page
                 {
                 if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
                 {
-                    path += FileUpload1.FileName.Replace(" ", "");
-                    filename = FileUpload1.FileName.Replace(" ", "");
-                    //save image in folder    
-                    FileUpload1.SaveAs(MapPath(path));
+                    path = ConvertImageToPdf(FileUpload1.PostedFile.FileName);
                     lbl_image.Text = "";
                 }
                 else
                 {
 
-                    path = "/Upload/download.jpg";
-                    filename = "download.jpg";
-                    lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif extensions.";
-                    lbl_image.ForeColor = System.Drawing.Color.Red;
+                    if (ext == ".pdf")
+                    {
+                        filename = FileUpload1.FileName.Replace(" ", "");
+                        filename = DateTime.Now + "-" + filename;
+                        filename = filename.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                        FileUpload1.SaveAs(Server.MapPath(("~/Upload/" + filename)));
+                        path = "/Upload/" + filename;
+                        lbl_image.Text = "";
+                    }
+                    else
+                    {
+
+                        path = "/Upload/28-08-2018-225721-download.pdf";
+                        filename = "28-08-2018-225721-download.pdf";
+                        lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
+                        lbl_image.ForeColor = System.Drawing.Color.Red;
+
+                    }
 
                 }
             }
@@ -138,7 +153,7 @@ public partial class Report : System.Web.UI.Page
 
                     System.Web.UI.WebControls.Image img = (System.Web.UI.WebControls.Image)data_grid.Rows[e.RowIndex].FindControl("img_user");
                     if (img.ImageUrl != "")
-                    {
+                    {                                   
                         path = img.ImageUrl;
                         int pos = img.ImageUrl.LastIndexOf("/") + 1;
                         filename = path.Substring(pos, path.Length - pos);
@@ -146,10 +161,10 @@ public partial class Report : System.Web.UI.Page
                     }
                     else
                     {
-                        path = "/Upload/download.jpg";
-                        filename = "download.jpg";
-                        lbl_image.Text = "";
-                    }
+                    path = "/Upload/28-08-2018-225721-download.pdf";
+                    filename = "28-08-2018-225721-download.pdf";
+                    lbl_image.Text = "";
+                }
                 }
            
         }
@@ -162,20 +177,31 @@ public partial class Report : System.Web.UI.Page
         if (VatFileUpload.HasFile)
         {
 
-            if (Vatext == ".jpg" || Vatext == ".png" || Vatext == ".gif" || Vatext == ".jpeg" || Vatext == ".pdf")
+            if (Vatext == ".jpg" || Vatext == ".png" || Vatext == ".gif" || Vatext == ".jpeg")
             {
-                Vatpath += VatFileUpload.FileName.Replace(" ", "");
-                vatfilename = VatFileUpload.FileName.Replace(" ", "");
-                //save image in folder    
-                VatFileUpload.SaveAs(MapPath(Vatpath));
+                Vatpath = ConvertVatImageToPdf(VatFileUpload.PostedFile.FileName);
                 lbl_vat.Text = "";
             }
             else
             {
-                Vatpath = "/Upload/download.jpg";
-                vatfilename = "download.jpg";
-                lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
-                lbl_vat.ForeColor = System.Drawing.Color.Red;
+
+                if (ext == ".pdf")
+                {
+                    vatfilename = VatFileUpload.FileName.Replace(" ", "");
+                    vatfilename = DateTime.Now + "-" + vatfilename;
+                    vatfilename = vatfilename.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                    VatFileUpload.SaveAs(Server.MapPath(("~/Vat/" + vatfilename)));
+                    Vatpath = "/Vat/" + vatfilename;
+                    lbl_vat.Text = "";
+                }
+                else
+                {
+                    Vatpath = "/Vat/28-08-2018-225721-download.pdf";
+                    vatfilename = "28-08-2018-225721-download.pdf";
+                    lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
+                    lbl_vat.ForeColor = System.Drawing.Color.Red;
+                    
+                }
 
             }
         }
@@ -184,22 +210,24 @@ public partial class Report : System.Web.UI.Page
             // use previous user image if new image is not changed 
 
             System.Web.UI.WebControls.Image img = (System.Web.UI.WebControls.Image)data_grid.Rows[e.RowIndex].FindControl("Image_EditVat");
+            
             if (img.ImageUrl != "")
             {
                 Vatpath = img.ImageUrl;
-                //int pos = Image2.ImageUrl.LastIndexOf("/") + 1;
-                //vatfilename = Vatpath.Substring(pos, Vatpath.Length - pos);
+                int pos = Vatpath.LastIndexOf("/") + 1;
+                vatfilename = Vatpath.Substring(pos, Vatpath.Length - pos);
                 lbl_vat.Text = "";
             }
             else
             {
-                Vatpath = "/Upload/download.jpg";
-                vatfilename = "download.jpg";
-                lbl_vat.Text = "";
+                Vatpath = "/Vat/28-08-2018-225721-download.pdf";
+                vatfilename = "28-08-2018-225721-download.pdf";
+                lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
+                lbl_vat.ForeColor = System.Drawing.Color.Red;
             }
         }
         con.Open();
-
+       
         using (SQLiteCommand cmd = new SQLiteCommand("update tbl_expenses set AmountPaid='" + textMoney.Text +
                                         "',payment='" + textpayment.Text +
                                         "',Description='" + textDescription.Text +
@@ -230,6 +258,69 @@ public partial class Report : System.Web.UI.Page
         loaddata();
     }
 
+    public String ConvertImageToPdf(string Name)
+    {
+        iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(Name);
+        int pos = Name.LastIndexOf("\\") + 1;
+        filename = Name.Substring(pos, Name.Length - pos).Replace(" ", "");
+        filename = filename.Remove(filename.LastIndexOf(".") + 1).ToLower();
+        filename = DateTime.Now + "-" + filename + "pdf";
+        filename = filename.Replace("/", "-").Replace(":", "").Replace(" ", "-");
+        string OutPutFile = Server.MapPath(("~/Upload/" + filename));
+        using (FileStream fs = new FileStream(OutPutFile, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            using (Document doc = new Document(PageSize.A4, 10f, 10f, 10f, 0f))
+            {
+
+
+                using (PdfWriter writer = PdfWriter.GetInstance(doc, fs))
+                {
+
+                    doc.Open();
+                    image.ScaleToFit(doc.PageSize);
+                    image.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
+                    image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
+                    writer.DirectContent.AddImage(image);
+                    doc.Close();
+
+                }
+            }
+        }
+        OutPutFile = "/Upload/" + filename;
+        return OutPutFile;
+    }
+
+    public String ConvertVatImageToPdf(string Name)
+    {
+        iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(Name);
+        int pos = Name.LastIndexOf("\\") + 1;
+        vatfilename = Name.Substring(pos, Name.Length - pos).Replace(" ", "");
+        vatfilename = vatfilename.Remove(vatfilename.LastIndexOf(".") + 1).ToLower();
+        vatfilename = DateTime.Now + "-" + vatfilename + "pdf";
+        vatfilename = vatfilename.Replace("/", "-").Replace(":", "").Replace(" ", "-");
+        string OutPutFile = Server.MapPath(("~/Vat/" + vatfilename));
+        using (FileStream fs = new FileStream(OutPutFile, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            using (Document doc = new Document(PageSize.A4, 10f, 10f, 10f, 0f))
+            {
+
+                using (PdfWriter writer = PdfWriter.GetInstance(doc, fs))
+                {
+
+                    doc.Open();
+                    image.ScaleToFit(doc.PageSize);
+                    image.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
+                    image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
+                    writer.DirectContent.AddImage(image);
+                    doc.Close();
+
+                }
+            }
+        }
+        OutPutFile = "/Vat/" + vatfilename;
+        return OutPutFile;
+    }
+
     protected void data_grid_RowCancelingEdit(object sender, GridViewCancelEditEventArgs e)
     {
         data_grid.EditIndex = -1;
@@ -248,6 +339,7 @@ public partial class Report : System.Web.UI.Page
         ds = new DataSet();
         adp.Fill(ds);
         dt = ds.Tables[0];
+
         if (dt.Rows.Count == 0)
         {
             btn_Excel.Visible = false;
@@ -383,44 +475,112 @@ public partial class Report : System.Web.UI.Page
         {
             dt.Columns.Remove("ID");
             dt.Columns.Remove("Image");
+           
         }
         if (!columnPageno)
         {
             dt.Columns.Add("PageNo");
+           
         }
-        List<string> ImageStr = GetImagesInHTMLString(sw.ToString());
-        var unique_payments = new HashSet<string>(ImageStr);
+        List<string> ImageStr = GetPdfImagesInExpenseHTMLString(sw.ToString());
+        List<string> ImageVatStr =GetPdfImagesInVatHTMLString(sw.ToString());
+        var unique_payments_Expense = new HashSet<string>(ImageStr);
+        
         IDictionary<int, string> dict = new Dictionary<int, string>();
+        IDictionary<int, string> dictPdfOnly = new Dictionary<int, string>();
         Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
         var writer = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
         pdfDoc.Open();
 
         //Create object for image
         int startOfImages= GetLastPageNoExpenseTableInPdf()+1;
-
-        foreach (string s in unique_payments)
+        int count = 0;
+        List<int> iList = new List<int>();
+        int accessNoPages = 0;
+        foreach (string s in unique_payments_Expense)
         {
             int pos = s.LastIndexOf("\\") + 1;
             filename = s.Substring(pos, s.Length - pos);
-            string ext = "." + filename.Substring(filename.LastIndexOf(".") + 1).ToLower();
-            if (ext == "pdf")
-            {
-                PdfReader pdfReader = new PdfReader(s);
-                int numberOfPages = pdfReader.NumberOfPages;
-               
-                dict.Add(startOfImages + numberOfPages - 1, filename);
-
+            PdfReader pdfReader = null;
+             pdfReader = new PdfReader(s);
+            
+            int numberOfPages = pdfReader.NumberOfPages;
+           
+            iList.Add(numberOfPages);
+            if (count == 0) { 
+               dict.Add(startOfImages,filename);
+                count++;
             }
             else
             {
+                
+                startOfImages = startOfImages + iList.ElementAt(accessNoPages);
                 dict.Add(startOfImages, filename);
-                startOfImages++;
+                accessNoPages++;
             }
-        } 
+            pdfReader.Close();
+           
+        }
+        unique_payments_Expense.Clear();
         
+        //int count = 0;
+        //List<int> iList = new List<int>();
+        //    int accessNoPages = 0;
+        // int  PdfPageNo=0;
+        //Boolean boValue = false;
+        //foreach (string s in unique_payments_Expense)
+        //{
+        //    int pos = s.LastIndexOf("\\") + 1;
+        //    filename = s.Substring(pos, s.Length - pos);
+        //    string ext = filename.Substring(filename.LastIndexOf(".") + 1).ToLower();
 
-             
-            
+
+        //    if (ext == "pdf")
+        //    {                   
+
+        //            PdfReader pdfReader = new PdfReader(s);
+        //            int numberOfPages = pdfReader.NumberOfPages;
+        //            iList.Add(numberOfPages);
+
+
+        //            if (boValue == false)
+        //            {
+        //                dict.Add(startOfImages, filename);
+        //                boValue = true;
+
+        //            }
+        //            else
+        //            { 
+
+        //            PdfPageNo = startOfImages + iList.ElementAt(accessNoPages);
+        //            dict.Add(PdfPageNo, filename);
+        //            accessNoPages++;
+        //            startOfImages = PdfPageNo;
+        //            boValue = true;
+        //            }
+
+
+        //    }
+        //    else
+        //    {
+        //        if (boValue == true) { 
+        //            startOfImages = startOfImages+ iList.ElementAt(accessNoPages);
+        //            dict.Add(startOfImages, filename);
+        //            boValue = false;
+        //            accessNoPages++;
+        //        }
+        //        else
+        //        {
+        //            dict.Add(startOfImages, filename);
+        //        }
+
+        //        startOfImages++;
+
+
+        //    }
+
+        //} 
+
         for (int rows = 0; rows < dt.Rows.Count; rows++)
         {
             for (int count1 = 0; count1 < dict.Count; count1++)
@@ -437,6 +597,26 @@ public partial class Report : System.Web.UI.Page
 
             }
         }
+
+        //for(int rows = 0; rows < dt.Rows.Count; rows++)
+        //{
+
+        //    for (int count1 = 0; count1 < dictPdfOnly.Count; count1++)
+        //    {
+        //        var element = dictPdfOnly.ElementAt(count1);
+        //        var Key = element.Key;
+        //        var Value = element.Value;
+
+        //        if (dt.Rows[rows]["VatFilename"].ToString() == Value)
+        //        {
+        //            dt.Rows[rows]["VatPageNo"] = Key;
+        //        }
+
+
+        //    }
+
+
+        //}
 
         PdfPTable PdfTable1 = new PdfPTable(dt.Columns.Count);
         PdfTable1.WidthPercentage = 100f;
@@ -465,6 +645,7 @@ public partial class Report : System.Web.UI.Page
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("PageNo", font)));
             PdfTable1.AddCell(PdfPCell);
+           
             //How add the data from datatable to pdf table
             iTextSharp.text.Font font1 = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8f, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLACK);
 
@@ -484,7 +665,8 @@ public partial class Report : System.Web.UI.Page
                         PdfTable1.AddCell(PdfPCell);
                     }
                     else
-                    {
+                    {   
+                        
                         PdfPCell = new PdfPCell(new Paragraph(new Chunk(dt.Rows[rows][column].ToString(), font1)));
                         PdfTable1.AddCell(PdfPCell);
                     }
@@ -494,57 +676,146 @@ public partial class Report : System.Web.UI.Page
         }
         pdfDoc.NewPage();      
         pdfDoc.Add(PdfTable1);
-     
-        foreach (string s in unique_payments)
-        {
-           
-            pdfDoc.NewPage(); 
-            iTextSharp.text.Image gif = iTextSharp.text.Image.GetInstance(s);    
-            gif.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
-            //gif.ScalePercent(10f);
-            gif.ScaleToFit(pdfDoc.PageSize);
-            gif.IndentationLeft = 9f;
-            gif.SetAbsolutePosition((PageSize.A4.Width - gif.ScaledWidth) / 2, (PageSize.A4.Height - gif.ScaledHeight) / 2);
-            gif.SpacingAfter = 9f;
-            pdfDoc.Add(gif);
-          
 
-            Chunk chunk = new Chunk("Go to First Page", font2);
-            chunk.SetAction(new PdfAction(PdfAction.FIRSTPAGE));
-            Paragraph p5 = new Paragraph();
-            p5.Add(chunk);
-            pdfDoc.Add(p5);
-        }
+        //foreach (string s in unique_payments_Expense)
+        //{
+
+
+        //    iTextSharp.text.Image gif = iTextSharp.text.Image.GetInstance(s);    
+        //    gif.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
+        //    //gif.ScalePercent(10f);
+        //    gif.ScaleToFit(pdfDoc.PageSize);
+        //    gif.IndentationLeft = 9f;
+        //    gif.SetAbsolutePosition((PageSize.A4.Width - gif.ScaledWidth) / 2, (PageSize.A4.Height - gif.ScaledHeight) / 2);
+        //    gif.SpacingAfter = 9f;
+        //    writer.DirectContent.AddImage(gif);
+
+
+        //    Chunk chunk = new Chunk("Go to First Page", font2);
+        //    chunk.SetAction(new PdfAction(PdfAction.FIRSTPAGE));
+        //    Paragraph p5 = new Paragraph();
+        //    p5.Add(chunk);
+        //    pdfDoc.Add(p5);
+        //}
+        
+            //PdfCopy pdf = new PdfCopy(pdfDoc,Response.OutputStream);
+            //foreach (string file in unique_payments_Expense)
+            //{
+            //    PdfReader reader = null;
+            //    reader = new PdfReader(file);
+            //    pdf.AddDocument(reader);
+            //    reader.Close();
+            //}
+        
+
+
+        
 
         pdfDoc.Close();
         Response.Write(pdfDoc);       
         Response.End();
        
     }
+    //public static bool MergePDFs(IEnumerable<string> fileNames)
+    //{
+    //    bool merged = true;
+    //    using (FileStream stream = new FileStream(targetPdf, FileMode.Create))
+    //    {
+    //        Document document = new Document();
+    //        PdfCopy pdf = new PdfCopy(document, stream);
+    //        PdfReader reader = null;
+    //        try
+    //        {
+    //            document.Open();
+    //            foreach (string file in fileNames)
+    //            {
+    //                reader = new PdfReader(file);
+    //                pdf.AddDocument(reader);
+    //                reader.Close();
+    //            }
+    //        }
+    //        catch (Exception)
+    //        {
+    //            merged = false;
+    //            if (reader != null)
+    //            {
+    //                reader.Close();
+    //            }
+    //        }
+    //        finally
+    //        {
+    //            if (document != null)
+    //            {
+    //                document.Close();
+    //            }
+    //        }
+    //    }
+    //    return merged;
+    //}
 
-    private List<string> GetImagesInHTMLString(string htmlString)
+    private List<string> GetPdfImagesInExpenseHTMLString(string htmlString)
     {
-        List<string> images = new List<string>();
-        string pattern = "<img.+?id=[\"'](.+?)[\"'].*?src=[\"'](.+?)[\"'].*?>";
-       
+        List<string> ExpenseVatimages = new List<string>();
+        string pattern = "<iframe.+?src=[\"'](.+?)[\"'].*?id=[\"'](.+?)[\"'].*?>";
+       //string Pattern = "<img.+?src=[\"'](.+?)[\"'].*?>";
+       // string PdfPattern = "<iframe.+?src=[\"'](.+?)[\"'].*?>";
         Regex rgx = new Regex(pattern, RegexOptions.IgnoreCase);
+        //Regex rgxPdf = new Regex(PdfPattern, RegexOptions.IgnoreCase);
         MatchCollection matches = rgx.Matches(htmlString);
+        //MatchCollection matchesPdf = rgxPdf.Matches(htmlString);
         for (int i = 0, l = matches.Count; i < l; i++)
         {
-            string idStr = matches[i].Groups[1].Value;
-            if (idStr.Contains("Image1"))
+            string idStr = matches[i].Groups[2].Value;
+            if (idStr.Contains("DisplayExpensePdf"))
             {
-                string modifyStr = matches[i].Groups[2].Value.Remove(0, 7);
-                images.Add(Server.MapPath("Upload") + modifyStr.Replace("/", "\\").Replace("%20", " "));
+                string modifyStr = matches[i].Groups[1].Value.Remove(0, 7);
+                ExpenseVatimages.Add(Server.MapPath("Upload") + modifyStr.Replace("/", "\\").Replace("%20", " "));
             }
-            else
-            {
-                string modifyVatStr = matches[i].Groups[2].Value.Remove(0, 4);
-                images.Add(Server.MapPath("Vat") + modifyVatStr.Replace("/", "\\").Replace("%20", " "));
-            }
-            
+            //else
+            //{
+            //    string modifyVatStr = matches[i].Groups[1].Value.Remove(0, 4);
+            //    ExpenseVatimages.Add(Server.MapPath("Vat") + modifyVatStr.Replace("/", "\\").Replace("%20", " "));
+            //}
+                                                                                                                                                                                                                                                                                                                                                                                                                
         }
-        return images;
+        //for (int i = 0, l = matchesPdf.Count; i < l; i++)
+        //{
+        //    //string idStr = matches[i].Groups[1].Value;
+        //    //if (idStr.Contains("Image1"))
+        //    //{
+        //    //string modifyStr = matches[i].Groups[2].Value.Remove(0, 7);
+        //    //Expenseimages.Add(Server.MapPath("Upload") + modifyStr.Replace("/", "\\").Replace("%20", " "));
+        //    //}
+        //    //else
+        //    //{
+        //    string modifyVatStr = matchesPdf[i].Groups[1].Value.Remove(0, 4);
+        //    ExpenseVatimages.Add(Server.MapPath("Vat") + modifyVatStr.Replace("/", "\\").Replace("%20", " "));
+        //    //}
+        //}
+        return ExpenseVatimages;
+    }
+
+    private List<string> GetPdfImagesInVatHTMLString(string htmlString)
+    {
+        List<string> ExpenseVatimages = new List<string>();
+        string pattern = "<iframe.+?src=[\"'](.+?)[\"'].*?id=[\"'](.+?)[\"'].*?>";
+        //string Pattern = "<img.+?src=[\"'](.+?)[\"'].*?>";
+        // string PdfPattern = "<iframe.+?src=[\"'](.+?)[\"'].*?>";
+        Regex rgx = new Regex(pattern, RegexOptions.IgnoreCase);
+        //Regex rgxPdf = new Regex(PdfPattern, RegexOptions.IgnoreCase);
+        MatchCollection matches = rgx.Matches(htmlString);
+        //MatchCollection matchesPdf = rgxPdf.Matches(htmlString);
+        for (int i = 0, l = matches.Count; i < l; i++)
+        {
+            string idStr = matches[i].Groups[2].Value;
+            if (idStr.Contains("DisplayPdf"))
+            {
+                string modifyVatStr = matches[i].Groups[1].Value.Remove(0, 4);
+                ExpenseVatimages.Add(Server.MapPath("Vat") + modifyVatStr.Replace("/", "\\").Replace("%20", " "));
+            }
+
+        }
+        return ExpenseVatimages;
     }
 
     public void TableLayout(PdfPTable table, float[][] widths, float[] heights, int headerRows, int rowStart, PdfContentByte[] canvases)

@@ -61,10 +61,13 @@
                     </asp:BoundField>
                     <asp:TemplateField HeaderText="Image" HeaderStyle-Width="200px">  
                 <ItemTemplate>  
-                    <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="80px" />  
+                   <%-- <asp:Image ID="Image1" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="80px" />--%>
+                    <iframe id="DisplayExpense" runat="server" src='<%# Eval("Image")%>' width="200px" height="150px"></iframe>   
                 </ItemTemplate>  
                 <EditItemTemplate>  
-                    <asp:Image ID="img_user" runat="server" ImageUrl='<%# Eval("Image") %>' Height="80px" Width="80px" />  
+                     <iframe id="DisplayEditExpense" runat="server" src='<%# Eval("Image")%>' width="200px" height="150px"></iframe>
+                          <%--<asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="0px" Width="0px" />--%>
+                    <asp:Image ID="img_user" runat="server" ImageUrl='<%# Eval("Image") %>' Height="0px" Width="0px" />  
                     <br />  
                     <asp:FileUpload ID="FileUpload1" runat="server" />  
                 </EditItemTemplate>  
@@ -79,31 +82,14 @@
                       <asp:TemplateField HeaderText="VATReceipt" HeaderStyle-Width="200px">  
                         <ItemTemplate>
                       
-                             <%if(Value.Equals("pdf")) {%> 
-
-                              <iframe id="ifDisplayPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="200px" height="150px"></iframe>                    
-                            
-                            <%}%>
-
-                            <%else%>
-                            
-                            <%{%> 
-                              <asp:Image ID="Image_Vat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="100px" />                      
-
-                            
-                            <% } %>
+                             
+                            <iframe id="ifDisplayPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="200px" height="150px"></iframe> 
                         </ItemTemplate>  
                         <EditItemTemplate>  
-                            <%if(Value.Equals("pdf")) {%>
+                          
                             <iframe id="ifDisplayEditPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="200px" height="150px"></iframe>
-                            <%}%>
-
-                            <%else%>
-                            
-                            <%{%> 
-                        <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="100px" /> 
-                             <% } %> 
-                         <br />  
+                          <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="0px" Width="0px" /> 
+                            <br />  
                         <asp:FileUpload ID="FileUpload2" runat="server" />  
                         </EditItemTemplate>  
                         <HeaderStyle Width="200px"></HeaderStyle>

@@ -139,8 +139,8 @@
             <AlternatingRowStyle BackColor="White" height="20px" ForeColor="#284775" />
             
             <Columns>
-                <asp:CommandField ShowEditButton="true" ButtonType="Link" ItemStyle-Width="20px"/>  
-                        <asp:CommandField ShowDeleteButton="true" ButtonType="Link" ItemStyle-Width="20px"/>
+                <asp:CommandField ShowEditButton="true" ButtonType="Link"  EditImageUrl="~/Pics/NewEdit.png"  UpdateImageUrl="~/Pics/Update.png" CancelImageUrl="~/Pics/NewCancel.png" ItemStyle-Wrap="false"/>  
+                        <asp:CommandField ShowDeleteButton="true" ButtonType="Link"  DeleteImageUrl="~/Pics/NewDelete.jpg"  ItemStyle-Wrap="false"/>
             
                 <asp:BoundField DataField="Date" HeaderText="Date" ItemStyle-HorizontalAlign="Center"  >
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
@@ -163,10 +163,12 @@
                     </asp:BoundField>--%>
                 <asp:TemplateField HeaderText="Image"  ItemStyle-Height = "50px" ItemStyle-Width = "70px">  
                 <ItemTemplate>  
-                    <asp:Image ID="Image1" runat="server" ImageUrl='<%#  Eval("Image") %>' Height="50px" Width="50px" />  
+                    <%--<asp:Image ID="Image1" runat="server" ImageUrl='<%#  Eval("Image") %>' Height="50px" Width="50px" /> --%>
+                    <iframe id="DisplayExpensePdf" runat="server" src='<%# Eval("Image")%>' width="150px" height="200px" style="overflow:hidden"></iframe>  
                 </ItemTemplate>  
-                <EditItemTemplate>  
-                    <asp:Image ID="img_user" runat="server" ImageUrl='<%#  Eval("Image")%>' Height="80px" Width="70px" />  
+                <EditItemTemplate> 
+                     <iframe id="DisplayExpenseEditPdf" name="DisplayEditPdf" runat="server" src='<%# Eval("Image")%>' width="150px" height="200px" style="overflow:hidden"></iframe> 
+                    <asp:Image ID="img_user" runat="server" ImageUrl='<%#  Eval("Image")%>' Height="0px" Width="0px" />  
                     <br />  
                     <asp:FileUpload ID="FileUpload1" runat="server" />  
                 </EditItemTemplate>  
@@ -179,12 +181,16 @@
                     </asp:BoundField>
                    
                  <asp:TemplateField HeaderText="VATReceipt"  ItemStyle-Height = "50px" ItemStyle-Width = "70px">  
-                        <ItemTemplate>  
-                        <asp:Image ID="Image_Vat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="50px" Width="50px" />  
-                        </ItemTemplate>  
+                        <ItemTemplate>                              
+                              <iframe id="DisplayPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="150px" height="200px" style="overflow:hidden"></iframe>                                                                          
+                                            
+                         </ItemTemplate>  
                         <EditItemTemplate>  
-                        <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="80px" Width="70px" />  
-                         <br />  
+                           
+                         <iframe id="DisplayEditPdf" name="DisplayEditPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="150px" height="200px" style="overflow:hidden"></iframe>   
+                        <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="0px" Width="0px" />  
+                         
+                            <br />  
                         <asp:FileUpload ID="FileUpload2" runat="server" />  
                         </EditItemTemplate>  
                         <HeaderStyle Width="200px"></HeaderStyle>
@@ -208,6 +214,7 @@
         <%--<div style="width: 1000px; margin: 0 auto; ">
                <asp:Image ID="Image1" runat="server" Height="200px" Width="200px" ImageAlign="right"  Visible="false"/>
         </div>--%>
+                          
     </form>
 </body>
 </html>

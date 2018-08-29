@@ -4,11 +4,16 @@ using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-using System.Configuration;
 using System.Data.SqlClient;
 using System.Data;
 using System.IO;
+using iTextSharp.text;
+using iTextSharp.text.pdf;
+using iTextSharp.text.html.simpleparser;
+using System.Text.RegularExpressions;
+using System.Drawing;
 using System.Data.SQLite;
+using System.Web.UI.HtmlControls;
 
 public partial class Expense : System.Web.UI.Page
 {
@@ -99,54 +104,91 @@ public partial class Expense : System.Web.UI.Page
             ext = "." + extension.Substring(extension.LastIndexOf(".") + 1).ToLower();
         }
 
-        
-            if (FileUpload1.HasFile)
+
+        if (FileUpload1.HasFile)
+        {
+            if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
-            if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg" || ext == ".pdf")
-            {
-                Filename = FileUpload1.FileName.Replace(" ", "");
-                FileUpload1.PostedFile.SaveAs(Server.MapPath(("~/Upload/" + Filename)));
-                Images = "/Upload/" + Filename.ToString();
+                Images = ConvertImageToPdf(FileUpload1.PostedFile.FileName);
                 lbl_image.Text = "";
             }
             else
             {
-                Images = "/Upload/download.jpg";
-                Filename = "download.jpg";
-                lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
-                lbl_image.ForeColor = System.Drawing.Color.Red;
-
-            }
-            }
-            else
-            {
-                if (ViewState["File"] != null)
+                if (ext == ".pdf")
                 {
-                    Images = ViewState["File"].ToString();
-                    int pos = Images.LastIndexOf("/") + 1;
-                    string fileName = Images.Substring(pos, Images.Length - pos).ToString();
-                    Filename = fileName;
+                    Filename = FileUpload1.FileName.Replace(" ", "");
+                    Filename = DateTime.Now + "-" + Filename;
+                    Filename = Filename.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                    FileUpload1.SaveAs(Server.MapPath(("~/Upload/" + Filename)));
+                    Images = "/Upload/" + Filename;
                     lbl_image.Text = "";
                 }
                 else
                 {
-                    Images = "/Upload/download.jpg";
-                    Filename = "download.jpg";
+                    Images = "/Upload/28-08-2018-225721-download.pdf";
+                    Filename = "28-08-2018-225721-download.pdf";
+                    lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
+                    lbl_image.ForeColor = System.Drawing.Color.Red;
+                }
+
+            }
+        }
+        else
+        {
+            if (ViewState["File"] != null)
+            {
+                Images = ViewState["File"].ToString();
+                int pos = Images.LastIndexOf("/") + 1;
+                string fileName = Images.Substring(pos, Images.Length - pos).ToString();
+                Filename = fileName;
+                lbl_image.Text = "";
+            }
+            else
+            {
+                Images = "/Upload/28-08-2018-225721-download.pdf";
+                Filename = "28-08-2018-225721-download.pdf";
                 lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_image.ForeColor = System.Drawing.Color.Red;
             }
-            }
-        
-        //else
-        //{
-        //    Images = "/Upload/download.jpg";
-        //    Filename = "download.jpg";
-        //    lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
-        //    lbl_image.ForeColor = System.Drawing.Color.Red;
+        }
 
-        //}
+
         return (Images);
     }
+
+    public String ConvertImageToPdf(string Name)
+    {
+        iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(Name);
+        int pos = Name.LastIndexOf("\\") + 1;
+        Filename = Name.Substring(pos, Name.Length - pos).Replace(" ", "");
+        Filename = Filename.Remove(Filename.LastIndexOf(".") + 1).ToLower();
+        Filename = DateTime.Now + "-" + Filename + "pdf";
+        Filename = Filename.Replace("/", "-").Replace(":", "").Replace(" ", "-");
+        string OutPutFile = Server.MapPath(("~/Upload/" + Filename));
+        using (FileStream fs = new FileStream(OutPutFile, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            using (Document doc = new Document(PageSize.A4, 10f, 10f, 10f, 0f))
+            {
+
+
+                using (PdfWriter writer = PdfWriter.GetInstance(doc, fs))
+                {
+
+                    doc.Open();
+                    image.ScaleToFit(doc.PageSize);
+                    image.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
+                    image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
+                    writer.DirectContent.AddImage(image);
+                    doc.Close();
+
+                }
+            }
+        }
+        OutPutFile = "/Upload/" + Filename;
+        return OutPutFile;
+    }
+   
+
 
     protected void btn_submit_Click(object sender, EventArgs e)
     {
@@ -177,13 +219,29 @@ public partial class Expense : System.Web.UI.Page
 
     protected void btn_upload_Click(object sender, EventArgs e)
     {
-        Image1.Attributes.Add("width", "200");
-        Image1.Attributes.Add("height", "150");
+
         ViewState["Filename"] = null;
         Image1.ImageUrl = GetPhotos();
-        ViewState["File"] = Image1.ImageUrl;
         int pos = Image1.ImageUrl.LastIndexOf("/") + 1;
-        Image1.ImageUrl.Substring(pos, Image1.ImageUrl.Length - pos);
+        string extension = Image1.ImageUrl.Substring(pos, Image1.ImageUrl.Length - pos).ToString();
+        string ext = "." + extension.Substring(extension.LastIndexOf(".") + 1).ToLower();
+        if (ext == ".pdf")
+        {
+            ExpenseIframe.Attributes.Add("style", "visibility:visible");
+            ExpenseIframe.Attributes.Add("style", "height:150px;width:200px;");
+            ExpenseIframe.Attributes["src"] = Image1.ImageUrl;
+            Image1.Attributes.Add("visibility", "none");
+            Image1.Attributes.Add("width", "0px");
+            Image1.Attributes.Add("height", "0px");
+        }
+        else
+        {
+            Image1.Attributes.Add("visibility", "visible");
+            Image1.Attributes.Add("width", "200px");
+            Image1.Attributes.Add("height", "150px");
+            ExpenseIframe.Attributes.Add("style", "visibility:none");
+        }
+        ViewState["File"] = Image1.ImageUrl;
         ViewState["Filename"] = Image1.ImageUrl.Substring(pos, Image1.ImageUrl.Length - pos);
 
     }
@@ -193,9 +251,6 @@ public partial class Expense : System.Web.UI.Page
     {
         PopulateDropdown();
     }
-
-
-
     protected void btn_payment_Click(object sender, EventArgs e)
     {
         string popupScript = "<script language='javascript'>" +
@@ -205,9 +260,6 @@ public partial class Expense : System.Web.UI.Page
                            "</script>";
         Page.ClientScript.RegisterStartupScript(GetType(), "PopupScript", popupScript);
     }
-
-
-
     protected void btn_item_hidden_Click(object sender, EventArgs e)
     {
         PopulateDropdownitem();
@@ -236,21 +288,30 @@ public partial class Expense : System.Web.UI.Page
         if (vat_fileupload.HasFile)
         {
 
-            if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg" || ext == ".pdf")
+            if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
-                //This code executes when user presses the fileupload button and then presses submit button
-                VatFileName = vat_fileupload.FileName.Replace(" ", "");
-                vat_fileupload.PostedFile.SaveAs(Server.MapPath(("~/Vat/" + VatFileName)));
-                Images = "/Vat/" + VatFileName.ToString();
+               
+                Images = ConvertVatImageToPdf(vat_fileupload.PostedFile.FileName);
                 lbl_vatImage.Text = "";
             }
             else
             {
-                Images = "/Vat/download.jpg";
-                VatFileName = "download.jpg";
+                if (ext == ".pdf")
+                {
+                    VatFileName = vat_fileupload.FileName.Replace(" ", "");
+                    VatFileName = DateTime.Now + "-" + VatFileName;
+                    VatFileName = VatFileName.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                    vat_fileupload.SaveAs(Server.MapPath(("~/Vat/" + VatFileName)));
+                    Images = "/Vat/" + VatFileName;
+                    lbl_image.Text = "";
+                }
+                else
+                { 
+                Images = "/Vat/28-08-2018-225721-download.pdf";
+                VatFileName = "28-08-2018-225721-download.pdf";
                 lbl_vatImage.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vatImage.ForeColor = System.Drawing.Color.Red;
-
+                }
             }
         }
         else
@@ -268,38 +329,56 @@ public partial class Expense : System.Web.UI.Page
             }
             else
             {
-                Images = "/Vat/download.jpg";
-                VatFileName = "download.jpg";
+                Images = "/Vat/28-08-2018-225721-download.pdf";
+                VatFileName = "28-08-2018-225721-download.pdf";
                 lbl_vatImage.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vatImage.ForeColor = System.Drawing.Color.Red;
             }
         }
-
-        //else
-        //{
-        //    Images = "/Upload/download.jpg";
-        //    VatFileName = "download.jpg";
-
-        //    lbl_vatImage.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
-        //    lbl_vatImage.ForeColor = System.Drawing.Color.Red;
-
-        //}
         return (Images);
+    }
+    public String ConvertVatImageToPdf(string Name)
+    {
+        iTextSharp.text.Image image = iTextSharp.text.Image.GetInstance(Name);
+        int pos = Name.LastIndexOf("\\") + 1;
+        VatFileName = Name.Substring(pos, Name.Length - pos).Replace(" ", "");
+        VatFileName = VatFileName.Remove(VatFileName.LastIndexOf(".") + 1).ToLower();
+        VatFileName = DateTime.Now + "-" + VatFileName + "pdf";
+        VatFileName = VatFileName.Replace("/", "-").Replace(":", "").Replace(" ", "-");
+        string OutPutFile = Server.MapPath(("~/Vat/" + VatFileName));
+        using (FileStream fs = new FileStream(OutPutFile, FileMode.Create, FileAccess.Write, FileShare.None))
+        {
+            using (Document doc = new Document(PageSize.A4, 10f, 10f, 10f, 0f))
+            {
+
+                using (PdfWriter writer = PdfWriter.GetInstance(doc, fs))
+                {
+
+                    doc.Open();
+                    image.ScaleToFit(doc.PageSize);
+                    image.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
+                    image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
+                    writer.DirectContent.AddImage(image);
+                    doc.Close();
+
+                }
+            }
+        }
+        OutPutFile = "/Vat/" + VatFileName;
+        return OutPutFile;
     }
     protected void btn_vatupload_Click(object sender, EventArgs e)
     {
-       
         ViewState["VatFilename"] = null;
         Img_Vat.ImageUrl = GetVatPhotos();
-       
-        int pos = Img_Vat.ImageUrl.LastIndexOf("/") + 1;       
+        int pos = Img_Vat.ImageUrl.LastIndexOf("/") + 1;
         string extension = Img_Vat.ImageUrl.Substring(pos, Img_Vat.ImageUrl.Length - pos).ToString();
         string ext = "." + extension.Substring(extension.LastIndexOf(".") + 1).ToLower();
         if (ext == ".pdf")
         {
-            myframe.Attributes.Add("style", "visibility:visible");
-            myframe.Attributes.Add("style", "height:150px;width:200px;");
-            myframe.Attributes["src"] = Img_Vat.ImageUrl;
+            Vatmyframe.Attributes.Add("style", "visibility:visible");
+            Vatmyframe.Attributes.Add("style", "height:150px;width:200px;");
+            Vatmyframe.Attributes["src"] = Img_Vat.ImageUrl;
             Img_Vat.Attributes.Add("visibility", "none");
             Img_Vat.Attributes.Add("width", "0px");
             Img_Vat.Attributes.Add("height", "0px");
@@ -309,13 +388,10 @@ public partial class Expense : System.Web.UI.Page
             Img_Vat.Attributes.Add("visibility", "visible");
             Img_Vat.Attributes.Add("width", "200px");
             Img_Vat.Attributes.Add("height", "150px");
-            myframe.Attributes.Add("style", "visibility:none");
+            Vatmyframe.Attributes.Add("style", "visibility:none");
         }
         ViewState["VAtFile"] = Img_Vat.ImageUrl;
-        
         ViewState["VatFilename"] = Img_Vat.ImageUrl.Substring(pos, Img_Vat.ImageUrl.Length - pos);
-        
-
     }
 
 
@@ -330,11 +406,13 @@ public partial class Expense : System.Web.UI.Page
         Image1.ImageUrl = "";
         txt_Amount.Text = "";
         Img_Vat.ImageUrl = "";
-        myframe.Src = "";
+        Vatmyframe.Src = "";
         Img_Vat.Attributes.Add("width", "0px");
         Img_Vat.Attributes.Add("height", "0px");
-        myframe.Attributes.Add("style", "height:0px;width:0px;");
+        Vatmyframe.Attributes.Add("style", "height:0px;width:0px;");
         Image1.Attributes.Add("width", "0px");
         Image1.Attributes.Add("height", "0px");
     }
 }
+
+

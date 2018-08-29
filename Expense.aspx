@@ -175,11 +175,11 @@
                         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
                             <ContentTemplate>
-                                <asp:FileUpload ID="FileUpload1" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold" accept=".png,.jpg,.jpeg,.gif"/>
+                                <asp:FileUpload ID="FileUpload1" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold" accept=".png,.jpg,.jpeg,.gif,.pdf"/>
                                 <asp:Button ID="btn_upload" runat="server" Text="Show Image" OnClick="btn_upload_Click"  Font-Names="Bahnschrift SemiBold"/>
                                 <asp:Label ID="lbl_image" runat="server" Text="" Font-Size="Small" ></asp:Label> 
-                                <asp:Image ID="Image1" runat="server"  ImageAlign="Middle" />
-                                
+                                <asp:Image ID="Image1" runat="server"  Font-Size="Small" />
+                                <iframe id="ExpenseIframe"  runat="server" width="0px" height="0px"></iframe>
                                  <%-- <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="Only .jpg,.jpeg,gif,.png images are allowed." ValidationExpression="/^(([a-zA-Z]:)|(\\{2}\w+)\$?)(\\(\w[\w].*))+(.jpeg|.JPEG|.gif|.GIF| .png|.PNG)$/" ControlToValidate="FileUpload1"></asp:RegularExpressionValidator>--%>
                             </ContentTemplate>
                             <Triggers>
@@ -206,11 +206,11 @@
                     <td>
                         <asp:UpdatePanel ID="UpdatePanel2" runat="server" UpdateMode="Conditional">
                             <ContentTemplate>
-                        <asp:FileUpload ID="vat_fileupload" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold"/>
+                        <asp:FileUpload ID="vat_fileupload" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold" accept=".png,.jpg,.jpeg,.gif,.pdf"/>
                         <asp:Button ID="btn_vatupload" runat="server" Text="Show Image" OnClick="btn_vatupload_Click" Font-Names="Bahnschrift SemiBold" />
                         <asp:Label ID="lbl_vatImage" runat="server" Text="" Font-Size="Small"></asp:Label>
                         <asp:Image ID="Img_Vat" runat="server" Font-Size="Small"/>
-                        <iframe id="myframe"  runat="server" width="0px" height="0px"></iframe>
+                        <iframe id="Vatmyframe"  runat="server" width="0px" height="0px"></iframe>
                         
                             </ContentTemplate>
                             <Triggers>
