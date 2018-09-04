@@ -38,7 +38,7 @@ public partial class Display : System.Web.UI.Page
         SQLiteDataAdapter adp = new SQLiteDataAdapter(cmd);
         adp.Fill(ds);
         dt = ds.Tables[0];
-
+        Session["valuegrid"] = dt;
         if (ds.Tables[0].Rows.Count > 0)
         {
            
@@ -54,12 +54,30 @@ public partial class Display : System.Web.UI.Page
     {
         con.Open();
         GridViewRow row = (GridViewRow)GridView1.Rows[e.RowIndex];
+       
+         
+        dt = (DataTable)Session["valuegrid"];
+        string[] files = { dt.Rows[row.RowIndex]["Image"].ToString(), dt.Rows[row.RowIndex]["VatReceipt"].ToString() };
+        if(files.Contains("download.pdf"))
+        { }
+        else
+        { 
+        for (int i = 0; i < files.Length; i++)
+        {
+            string filePath = Server.MapPath(files[i].ToString());
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+        }
         using (SQLiteCommand cmd = new SQLiteCommand("delete FROM tbl_expenses where id='" + Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value.ToString()) + "'", con))
         {
             cmd.ExecuteNonQuery();
         }
-        dt = new DataTable();
+        dt.Rows.RemoveAt(e.RowIndex);
         GridView1.DataSource = dt;
+
         GridView1.DataBind();
         //Image1.ImageUrl = "";
         //Image2.ImageUrl = "";
@@ -70,6 +88,7 @@ public partial class Display : System.Web.UI.Page
     string vatfilename;
     protected void GridView1_RowUpdating(object sender, GridViewUpdateEventArgs e)
     {
+       
         int id = Convert.ToInt32(GridView1.DataKeys[e.RowIndex].Value.ToString());
         GridViewRow row = (GridViewRow)GridView1.Rows[e.RowIndex];
         TextBox textDate = (TextBox)row.Cells[2].Controls[0];
@@ -108,8 +127,8 @@ public partial class Display : System.Web.UI.Page
                 else
                 {
 
-                    path = "/Upload/28-08-2018-225721-download.pdf";
-                    filename = "28-08-2018-225721-download.pdf";
+                    path = "/Upload/download.pdf";
+                    filename = "download.pdf";
                     lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                     lbl_image.ForeColor = System.Drawing.Color.Red;
 
@@ -130,8 +149,8 @@ public partial class Display : System.Web.UI.Page
             }
             else
             {
-                path = "/Upload/28-08-2018-225721-download.pdf";
-                filename = "28-08-2018-225721-download.pdf";
+                path = "/Upload/download.pdf";
+                filename = "download.pdf";
                 lbl_image.Text = "";
             }
         }
@@ -164,8 +183,8 @@ public partial class Display : System.Web.UI.Page
                 }
                 else
                 { 
-                Vatpath = "/Upload/28-08-2018-225721-download.pdf";
-                vatfilename = "28-08-2018-225721-download.pdf";
+                Vatpath = "/Vat/download.pdf";
+                vatfilename = "download.pdf";
                 lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vat.ForeColor = System.Drawing.Color.Red;
                 }
@@ -185,8 +204,8 @@ public partial class Display : System.Web.UI.Page
             }
             else
             {
-                Vatpath = "/Vat/28-08-2018-225721-download.pdf";
-                vatfilename = "28-08-2018-225721-download.pdf";
+                Vatpath = "/Vat/download.pdf";
+                vatfilename = "download.pdf";
                 lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vat.ForeColor = System.Drawing.Color.Red;
             }
@@ -213,6 +232,8 @@ public partial class Display : System.Web.UI.Page
             cmd.ExecuteNonQuery();
         }
         con.Close();
+       
+        Session["valuegrid"] = dt;
         loaddata();
     }
     public String ConvertImageToPdf(string Name)
@@ -242,6 +263,7 @@ public partial class Display : System.Web.UI.Page
 
                 }
             }
+            fs.Dispose();
         }
         OutPutFile = "/Upload/" + filename;
         return OutPutFile;
@@ -273,6 +295,7 @@ public partial class Display : System.Web.UI.Page
 
                 }
             }
+            fs.Dispose();
         }
         OutPutFile = "/Vat/" + vatfilename;
         return OutPutFile;
