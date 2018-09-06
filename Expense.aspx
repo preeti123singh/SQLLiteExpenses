@@ -132,7 +132,7 @@
                 
                 <tr>
                     <td class="auto-style1" >
-                        payment
+                        Payment
                         <%--<asp:Label ID="lbl_pym" runat="server" Text="payment" Font-Names="Bahnschrift SemiBold" ></asp:Label>--%>
                     </td>
                     <td class="auto-style1" >
@@ -167,7 +167,7 @@
                  
                
                 <tr>
-                    <td style="vertical-align:sub;">Receipt(Jpg/Png)
+                    <td>Receipt(Jpg/Png)
                         <%--<asp:Label ID="lbl_Image" runat="server" Text="Receipt(Jpg/Png)" Font-Names="Bahnschrift SemiBold"  ></asp:Label>--%>
                     </td>
                     <td>  
@@ -178,7 +178,7 @@
                                 <asp:Button ID="btn_upload" runat="server" Text="Show Image" OnClick="btn_upload_Click"  Font-Names="Bahnschrift SemiBold" />
                                 <asp:Label ID="lbl_image" runat="server" Text="" Font-Size="Small" ></asp:Label> 
                                 <asp:Image ID="Image1" runat="server"  Font-Size="Small" />
-                                <iframe id="ExpenseIframe"  runat="server" width="0px" height="0px"></iframe>
+                                <iframe id="ExpenseIframe"  runat="server" width="0px" height="0px" style=" background-color:white; border-color:white"></iframe>
                                  <%-- <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="Only .jpg,.jpeg,gif,.png images are allowed." ValidationExpression="/^(([a-zA-Z]:)|(\\{2}\w+)\$?)(\\(\w[\w].*))+(.jpeg|.JPEG|.gif|.GIF| .png|.PNG)$/" ControlToValidate="FileUpload1"></asp:RegularExpressionValidator>--%>
                             </ContentTemplate>
                             <Triggers>
@@ -209,7 +209,7 @@
                         <asp:Button ID="btn_vatupload" runat="server" Text="Show Image" OnClick="btn_vatupload_Click" Font-Names="Bahnschrift SemiBold" />
                         <asp:Label ID="lbl_vatImage" runat="server" Text="" Font-Size="Small"></asp:Label>
                         <asp:Image ID="Img_Vat" runat="server" Font-Size="Small"/>
-                        <iframe id="Vatmyframe"  runat="server" width="0px" height="0px"></iframe>
+                        <iframe id="Vatmyframe"  runat="server" width="0px" height="0px" style=" background-color:white;border-color:white"></iframe>
                         
                             </ContentTemplate>
                             <Triggers>

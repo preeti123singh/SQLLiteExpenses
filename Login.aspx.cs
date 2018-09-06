@@ -27,10 +27,9 @@ public partial class Login : System.Web.UI.Page
             SQLiteConnection connection = new SQLiteConnection("Data Source=C:\\Users\\Preeti\\Documents\\Visual Studio 2015\\WebSites\\CalculateExpenseSQLLite\\SQLlite\\Expense.db;Version=3");
             
                 connection.Open();
-                //string uid = TextBox1.Text;
-                //string pass = TextBox2.Text;
-                string uid = "preeti";
-                string pass = "preeti";
+                string uid = TextBox1.Text;
+                string pass = TextBox2.Text;
+            
 
                 string qry = "select * from Ulogins where UserId='" + uid + "' and Password='" + pass + "'";
                 using (SQLiteCommand cmd = new SQLiteCommand(qry, connection))
@@ -44,6 +43,10 @@ public partial class Login : System.Web.UI.Page
                          Session["Connection"] = connection;
                         Response.Redirect("~\\Expense.aspx");
                         }
+                    else
+                    {
+                        Label1.Text = "UserId & Password Is not correct Try again..!!";
+                    }
                     }
                 }
             

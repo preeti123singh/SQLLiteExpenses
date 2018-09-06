@@ -76,15 +76,17 @@ img.avatar {
 
     <div class="container">
       <label for="uname"><b>Username</b></label>
-    <%--  <input type="text" placeholder="Enter Username" name="uname" required runat="server">--%>
-        <asp:TextBox ID="TextBox1" runat="server" CssClass="txtbox"></asp:TextBox>
-      <label for="psw"><b>Password</b></label>
-     <%-- <input type="password" placeholder="Enter Password" name="psw" required runat="server">--%>
+  
+        <asp:TextBox ID="TextBox1" runat="server" CssClass="txtbox"></asp:TextBox> <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Please enter Username" ControlToValidate="TextBox1" ValidationGroup="Require" ForeColor="#FF3300" Font-Size="Small"></asp:RequiredFieldValidator> 
+      
+        </br>
+        <label for="psw"><b>Password</b></label>
+
+     <asp:TextBox ID="TextBox2" runat="server" CssClass="txtbox" TextMode="Password"></asp:TextBox><asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="Please enter Password" ControlToValidate="TextBox2" ValidationGroup="Require" ForeColor="#FF3300" Font-Size="Small"></asp:RequiredFieldValidator> 
         
-     <asp:TextBox ID="TextBox2" runat="server" CssClass="txtbox"></asp:TextBox>
-        <asp:Button ID="Button1" runat="server" Text="Login"  CssClass="button" OnClick="Button1_Click"/>
+        <asp:Button ID="Button1" runat="server" Text="Login"  CssClass="button" OnClick="Button1_Click" ValidationGroup="Require"/> 
     
-          
+        <asp:Label ID="Label1" runat="server" Text="" Font-Size="Small" ForeColor="Red"></asp:Label>
      
     </div>
     </form>
