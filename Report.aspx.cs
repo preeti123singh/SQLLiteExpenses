@@ -155,7 +155,12 @@ public partial class Report : System.Web.UI.Page
             {
                 if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
                 {
-                    path = ConvertImageToPdf((FileUpload1.PostedFile.FileName));
+                    filename = FileUpload1.FileName.Replace(" ", "");
+                    filename = DateTime.Now + "-" + filename;
+                    filename = filename.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                    FileUpload1.SaveAs(Server.MapPath(("~/Upload/" + filename)));
+                    string ImagePath = Convert.ToString(Server.MapPath(("~/Upload/" + filename)));
+                    path = ConvertImageToPdf(ImagePath);
                     int pos = path.LastIndexOf("/") + 1;
                     filename = path.Substring(pos, path.Length - pos);
                     lbl_image.Text = "";
@@ -216,7 +221,12 @@ public partial class Report : System.Web.UI.Page
 
             if (Vatext == ".jpg" || Vatext == ".png" || Vatext == ".gif" || Vatext == ".jpeg")
             {
-                Vatpath = ConvertVatImageToPdf(VatFileUpload.PostedFile.FileName);
+                vatfilename = VatFileUpload.FileName.Replace(" ", "");
+                vatfilename = DateTime.Now + "-" + vatfilename;
+                vatfilename = vatfilename.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                VatFileUpload.SaveAs(Server.MapPath(("~/Vat/" + vatfilename)));
+                string ImagePath = Convert.ToString(Server.MapPath(("~/Vat/" + vatfilename)));
+                Vatpath = ConvertVatImageToPdf(ImagePath);
                 int pos = Vatpath.LastIndexOf("/") + 1;
                 vatfilename = Vatpath.Substring(pos, Vatpath.Length - pos);
                 lbl_vat.Text = "";
@@ -330,7 +340,10 @@ public partial class Report : System.Web.UI.Page
             
                 
         }
-        
+        if (File.Exists(Name))
+        {
+            File.Delete(Name);
+        }
         OutPutFile = "/Upload/" + filename;
         return OutPutFile;
     }
@@ -363,6 +376,10 @@ public partial class Report : System.Web.UI.Page
                 }
             }
            
+        }
+        if (File.Exists(Name))
+        {
+            File.Delete(Name);
         }
         OutPutFile = "/Vat/" + vatfilename;
         return OutPutFile;

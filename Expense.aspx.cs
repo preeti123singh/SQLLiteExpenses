@@ -109,7 +109,12 @@ public partial class Expense : System.Web.UI.Page
         {
             if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
-                Images = ConvertImageToPdf(FileUpload1.PostedFile.FileName);
+                Filename = FileUpload1.FileName.Replace(" ", "");
+                Filename = DateTime.Now + "-" + Filename;
+                Filename = Filename.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                FileUpload1.SaveAs(Server.MapPath(("~/Upload/" + Filename)));            
+                string path = Convert.ToString(Server.MapPath(("~/Upload/" + Filename)));
+                Images = ConvertImageToPdf(path);
                 int pos = Images.LastIndexOf("/") + 1;
                 Filename = Images.Substring(pos, Images.Length - pos);
                 lbl_image.Text = "";
@@ -188,6 +193,10 @@ public partial class Expense : System.Web.UI.Page
             
         }
         OutPutFile = "/Upload/" + Filename;
+        if (File.Exists(Name))
+        {
+            File.Delete(Name);
+        }
         return OutPutFile;
     }
    
@@ -293,8 +302,12 @@ public partial class Expense : System.Web.UI.Page
 
             if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
-               
-                Images = ConvertVatImageToPdf(vat_fileupload.PostedFile.FileName);
+                VatFileName = vat_fileupload.FileName.Replace(" ", "");
+                VatFileName = DateTime.Now + "-" + VatFileName;
+                VatFileName = VatFileName.Replace(" ", "-").Replace("/", "-").Replace(":", "");
+                vat_fileupload.SaveAs(Server.MapPath(("~/Vat/" + VatFileName)));
+                string path = Convert.ToString(Server.MapPath(("~/Vat/" + VatFileName)));
+                Images = ConvertVatImageToPdf(path);
                 int pos = Images.LastIndexOf("/") + 1;
                 VatFileName = Images.Substring(pos, Images.Length - pos);
                 lbl_vatImage.Text = "";
@@ -369,6 +382,11 @@ public partial class Expense : System.Web.UI.Page
                 }
             }
            
+        }
+
+        if (File.Exists(Name))
+        {
+            File.Delete(Name);
         }
         OutPutFile = "/Vat/" + VatFileName;
         return OutPutFile;
