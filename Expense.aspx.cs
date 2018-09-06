@@ -22,6 +22,8 @@ public partial class Expense : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
+        Session["data_grid"] = "";
+        Session["valuegrid"] = "";
         connection = (SQLiteConnection)Session["connection"];
 
         if (!Page.IsPostBack)
@@ -90,8 +92,6 @@ public partial class Expense : System.Web.UI.Page
         connection.Close();
     }
 
-
-
     string Filename;
     public string GetPhotos()
     {
@@ -110,6 +110,8 @@ public partial class Expense : System.Web.UI.Page
             if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
                 Images = ConvertImageToPdf(FileUpload1.PostedFile.FileName);
+                int pos = Images.LastIndexOf("/") + 1;
+                Filename = Images.Substring(pos, Images.Length - pos);
                 lbl_image.Text = "";
             }
             else
@@ -180,10 +182,10 @@ public partial class Expense : System.Web.UI.Page
                     image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
                     writer.DirectContent.AddImage(image);
                     doc.Close();
-
+                   
                 }
             }
-            fs.Dispose();
+            
         }
         OutPutFile = "/Upload/" + Filename;
         return OutPutFile;
@@ -293,6 +295,8 @@ public partial class Expense : System.Web.UI.Page
             {
                
                 Images = ConvertVatImageToPdf(vat_fileupload.PostedFile.FileName);
+                int pos = Images.LastIndexOf("/") + 1;
+                VatFileName = Images.Substring(pos, Images.Length - pos);
                 lbl_vatImage.Text = "";
             }
             else
@@ -361,10 +365,10 @@ public partial class Expense : System.Web.UI.Page
                     image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
                     writer.DirectContent.AddImage(image);
                     doc.Close();
-
+                    
                 }
             }
-            fs.Dispose();
+           
         }
         OutPutFile = "/Vat/" + VatFileName;
         return OutPutFile;

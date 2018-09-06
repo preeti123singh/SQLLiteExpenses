@@ -24,7 +24,7 @@ public partial class Display : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         con = (SQLiteConnection)Session["connection"];
-
+        Session["data_grid"]="";
         if (!Page.IsPostBack)
         {
             loaddata();
@@ -52,13 +52,18 @@ public partial class Display : System.Web.UI.Page
     }
     protected void GridView1_RowDeleting(object sender, GridViewDeleteEventArgs e)
     {
+
+        System.GC.Collect();
+        System.GC.WaitForPendingFinalizers();
         con.Open();
         GridViewRow row = (GridViewRow)GridView1.Rows[e.RowIndex];
-       
-         
         dt = (DataTable)Session["valuegrid"];
         string[] files = { dt.Rows[row.RowIndex]["Image"].ToString(), dt.Rows[row.RowIndex]["VatReceipt"].ToString() };
-        if(files.Contains("download.pdf"))
+        int pos = files[0].LastIndexOf("/") + 1;
+        string downloadfilename = files[0].Substring(pos, files[0].Length - pos);
+        int poss = files[1].LastIndexOf("/") + 1;
+        string downloadfilenames = files[1].Substring(pos, files[1].Length - pos);
+        if (downloadfilename == "download.pdf"|| downloadfilenames == "download.pdf")
         { }
         else
         { 
@@ -105,12 +110,9 @@ public partial class Display : System.Web.UI.Page
         {
             if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
             {
-                //path += FileUpload1.FileName.Replace(" ", "");
-                //filename = FileUpload1.FileName.Replace(" ", "");
-                // //save image in folder    
-                //FileUpload1.SaveAs(MapPath(path));
-                //lbl_image.Text = "";
                 path = ConvertImageToPdf(FileUpload1.PostedFile.FileName);
+                int pos = path.LastIndexOf("/") + 1;
+                filename = path.Substring(pos, path.Length - pos);
                 lbl_image.Text = "";
             }
             else
@@ -168,6 +170,8 @@ public partial class Display : System.Web.UI.Page
             if (Vatext == ".jpg" || Vatext == ".png" || Vatext == ".gif" || Vatext == ".jpeg" )
             {
                 Vatpath = ConvertVatImageToPdf(VatFileUpload.PostedFile.FileName);
+                int pos = Vatpath.LastIndexOf("/") + 1;
+                vatfilename = Vatpath.Substring(pos, Vatpath.Length - pos);
                 lbl_vat.Text = "";
             }
             else
@@ -260,10 +264,10 @@ public partial class Display : System.Web.UI.Page
                     image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
                     writer.DirectContent.AddImage(image);
                     doc.Close();
-
+                   
                 }
             }
-            fs.Dispose();
+          
         }
         OutPutFile = "/Upload/" + filename;
         return OutPutFile;
@@ -292,10 +296,10 @@ public partial class Display : System.Web.UI.Page
                     image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
                     writer.DirectContent.AddImage(image);
                     doc.Close();
-
+                  
                 }
             }
-            fs.Dispose();
+         
         }
         OutPutFile = "/Vat/" + vatfilename;
         return OutPutFile;

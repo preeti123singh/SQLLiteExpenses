@@ -175,7 +175,7 @@
                         <asp:ScriptManager ID="ScriptManager1" runat="server"></asp:ScriptManager>
                         <asp:UpdatePanel ID="UpdatePanel1" runat="server" UpdateMode="Conditional">
                             <ContentTemplate>
-                                <asp:FileUpload ID="FileUpload1" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold" accept=".png,.jpg,.jpeg,.gif,.pdf"/>
+                                <asp:FileUpload ID="FileUpload1" runat="server" CssClass="fileupl" Font-Names="Bahnschrift SemiBold" accept=".png,.jpg,.jpeg,.gif,.pdf" />
                                 <asp:Button ID="btn_upload" runat="server" Text="Show Image" OnClick="btn_upload_Click"  Font-Names="Bahnschrift SemiBold"/>
                                 <asp:Label ID="lbl_image" runat="server" Text="" Font-Size="Small" ></asp:Label> 
                                 <asp:Image ID="Image1" runat="server"  Font-Size="Small" />

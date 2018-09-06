@@ -15,6 +15,7 @@ using System.Drawing;
 using System.Data.SQLite;
 using System.Web.UI.HtmlControls;
 using System.Text;
+using System.Net.Mail;
 
 public partial class Report : System.Web.UI.Page
 {
@@ -85,16 +86,27 @@ public partial class Report : System.Web.UI.Page
     protected void data_grid_RowDeleting(object sender, GridViewDeleteEventArgs e)
     {
 
-        
+        System.GC.Collect();
+        System.GC.WaitForPendingFinalizers();
         GridViewRow row = (GridViewRow)data_grid.Rows[e.RowIndex];
         lbl_image.Text = "";
         lbl_vat.Text = "";
         con.Open();
-        
         DataTable dt = (DataTable)Session["data_grid"];
 
+        using (SQLiteCommand cmd = new SQLiteCommand("delete FROM tbl_expenses where id='" + Convert.ToInt32(data_grid.DataKeys[e.RowIndex].Values[0].ToString()) + "'", con))
+        {
+            cmd.ExecuteNonQuery();
+        }
+
+
         string[] files = { dt.Rows[row.RowIndex]["Image"].ToString(), dt.Rows[row.RowIndex]["VatReceipt"].ToString() };
-        if (files.Contains("download.pdf"))
+        int pos = files[0].LastIndexOf("/") + 1;
+        string downloadfilename = files[0].Substring(pos, files[0].Length - pos);
+        int poss = files[1].LastIndexOf("/") + 1;
+        string downloadfilenames = files[1].Substring(pos, files[1].Length - pos);
+
+        if (downloadfilename == "download.pdf" || downloadfilenames == "download.pdf")
         { }
         else
         {
@@ -107,11 +119,7 @@ public partial class Report : System.Web.UI.Page
                 }
             }
         }
-        using (SQLiteCommand cmd = new SQLiteCommand("delete FROM tbl_expenses where id='" + Convert.ToInt32(data_grid.DataKeys[e.RowIndex].Values[0].ToString()) + "'", con))
-        {
-            cmd.ExecuteNonQuery();
-        }
-
+        
         dt.Rows.RemoveAt(e.RowIndex);
         Session["data_grid"] = dt;
         loaddata();
@@ -147,7 +155,9 @@ public partial class Report : System.Web.UI.Page
             {
                 if (ext == ".jpg" || ext == ".png" || ext == ".gif" || ext == ".jpeg")
                 {
-                    path = ConvertImageToPdf(FileUpload1.PostedFile.FileName);
+                    path = ConvertImageToPdf((FileUpload1.PostedFile.FileName));
+                    int pos = path.LastIndexOf("/") + 1;
+                    filename = path.Substring(pos, path.Length - pos);
                     lbl_image.Text = "";
                 }
                 else
@@ -207,12 +217,14 @@ public partial class Report : System.Web.UI.Page
             if (Vatext == ".jpg" || Vatext == ".png" || Vatext == ".gif" || Vatext == ".jpeg")
             {
                 Vatpath = ConvertVatImageToPdf(VatFileUpload.PostedFile.FileName);
+                int pos = Vatpath.LastIndexOf("/") + 1;
+                vatfilename = Vatpath.Substring(pos, Vatpath.Length - pos);
                 lbl_vat.Text = "";
             }
             else
             {
 
-                if (ext == ".pdf")
+                if (Vatext == ".pdf")
                 {
                     vatfilename = VatFileUpload.FileName.Replace(" ", "");
                     vatfilename = DateTime.Now + "-" + vatfilename;
@@ -279,6 +291,8 @@ public partial class Report : System.Web.UI.Page
         dt.Rows[row.RowIndex]["Item"] = textItem.Text;
         dt.Rows[row.RowIndex]["VatAmount"] = textVatAmount.Text;
         dt.Rows[row.RowIndex]["VatReceipt"] = Vatpath;
+        dt.Rows[row.RowIndex]["Filename"] = filename;
+        dt.Rows[row.RowIndex]["VatFileName"] = vatfilename;
         Session["data_grid"] = dt;
         data_grid.EditIndex = -1;
         con.Close();
@@ -308,12 +322,15 @@ public partial class Report : System.Web.UI.Page
                     image.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
                     image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
                     writer.DirectContent.AddImage(image);
+                    
                     doc.Close();
-
+                   
                 }
             }
-            fs.Dispose();
+            
+                
         }
+        
         OutPutFile = "/Upload/" + filename;
         return OutPutFile;
     }
@@ -340,11 +357,12 @@ public partial class Report : System.Web.UI.Page
                     image.Alignment = iTextSharp.text.Image.TEXTWRAP | iTextSharp.text.Image.ALIGN_RIGHT;
                     image.SetAbsolutePosition((PageSize.A4.Width - image.ScaledWidth) / 2, (PageSize.A4.Height - image.ScaledHeight) / 2);
                     writer.DirectContent.AddImage(image);
+                   
                     doc.Close();
-
+                   
                 }
             }
-            fs.Dispose();
+           
         }
         OutPutFile = "/Vat/" + vatfilename;
         return OutPutFile;
@@ -445,7 +463,6 @@ public partial class Report : System.Web.UI.Page
 
     }
 
-
     public int GetLastPageNoExpenseTableInPdf(DataTable dt1)
     {
         Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
@@ -486,10 +503,12 @@ public partial class Report : System.Web.UI.Page
         pdfDoc.NewPage();
         pdfDoc.Add(PdfTable1);
         int currentPage = writer.PageNumber;
+       
+        pdfDoc.Close();
         return currentPage;
+       
+        
     }
-
-
 
     protected void btn_Pdf_Click(object sender, EventArgs e)
     {
@@ -503,15 +522,13 @@ public partial class Report : System.Web.UI.Page
         data_grid.Columns[0].Visible = false;
         data_grid.Columns[2].Visible = false;
         StringWriter sw = new StringWriter();
-        //HtmlTextWriter hw = new HtmlTextWriter(sw);
-        //data_grid.RenderControl(hw);
-
+        HtmlTextWriter hw = new HtmlTextWriter(sw);
+        data_grid.RenderControl(hw);
         DataTable dt1 = new DataTable();
         dt1 = (DataTable)Session["data_grid"];
                
         Boolean columnPageno = dt1.Columns.Contains("PageNo");
         
-        //dt1.Columns.Remove("VatFileName");
         if (!columnPageno)
         {
             dt1.Columns.Add("PageNo");
@@ -612,6 +629,7 @@ public partial class Report : System.Web.UI.Page
 
 
         pdfDoc.Add(PdfTable1);
+      
 
         PdfImportedPage page = null;
         PdfContentByte cb = writer.DirectContent;
@@ -635,12 +653,14 @@ public partial class Report : System.Web.UI.Page
 
         }
         dt1.Columns.Remove("PageNo");
-      
-        writer.Dispose();
+       
+       
         Session["data_grid"] = dt1;
         pdfDoc.Close();
+        
         Response.Write(pdfDoc);
         Response.End();
+        
     }
 
     public Dictionary<int, string> ReturnDictionary(int StartOfImages, HashSet<string> unique_payments_Expense)
@@ -745,22 +765,7 @@ public partial class Report : System.Web.UI.Page
 
         Boolean columnExists = dt1.Columns.Contains("Filename");
         Boolean columnPageno = dt1.Columns.Contains("PageNo");
-        //if (columnExists)
-        //{
-        //    dt1.Columns.Remove("ID");
-        //    dt1.Columns.Remove("Image");
-        //    dt1.Columns.Remove("VatReceipt");
-        //    dt1.Columns.Remove("VatFilename");
-
-
-
-        //}
-
-        //if (columnExists)
-        //{
-        //    dt1.Columns.Remove("Filename");
-        //}
-       
+               
         if (!columnPageno)
         {
             dt1.Columns.Add("PageNo");
@@ -889,7 +894,7 @@ public partial class Report : System.Web.UI.Page
         dt1.Columns.Remove("PageNo");
 
 
-        writer.Dispose();
+        
         Session["data_grid"] = dt1;
         pdfDoc.Close();
         Response.Write(pdfDoc);

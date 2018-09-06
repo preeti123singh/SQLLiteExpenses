@@ -15,6 +15,11 @@
             #form1 {
                 font-family: "Bahnschrift SemiBold";
             }
+             .restricted
+            {
+            overflow-y: hidden !important;
+            display: block;
+            }
         </style>
 
         <script type="text/javascript">
@@ -163,10 +168,10 @@
                         <asp:TemplateField HeaderText="Image" ItemStyle-Height="50px" ItemStyle-Width="70px">
                             <ItemTemplate>
                                 <%--<asp:Image ID="Image1" runat="server" ImageUrl='<%#  Eval("Image") %>' Height="50px" Width="50px" /> --%>
-                                <iframe id="DisplayExpensePdf" runat="server" src='<%# Eval("Image")%>' width="150px" height="200px" style="overflow: hidden"></iframe>
+                                <iframe id="DisplayExpensePdf" runat="server" src='<%# Eval("Image")%>'  scrolling="no" ></iframe>
                             </ItemTemplate>
                             <EditItemTemplate>
-                                <iframe id="DisplayExpenseEditPdf" name="DisplayEditPdf" runat="server" src='<%# Eval("Image")%>' width="150px" height="200px" style="overflow: hidden"></iframe>
+                                <iframe id="DisplayExpenseEditPdf" name="DisplayEditPdf" runat="server"  scrolling="no" src='<%# Eval("Image")%>' ></iframe>
                                 <asp:Image ID="img_user" runat="server" ImageUrl='<%#  Eval("Image")%>' Height="0px" Width="0px" />
                                 <br />
                                 <asp:FileUpload ID="FileUpload1" runat="server" />
@@ -181,12 +186,12 @@
 
                         <asp:TemplateField HeaderText="VATReceipt" ItemStyle-Height="50px" ItemStyle-Width="70px">
                             <ItemTemplate>
-                                <iframe id="DisplayPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="150px" height="200px" style="overflow: hidden"></iframe>
+                                <iframe id="DisplayPdf" runat="server" src='<%# Eval("VatReceipt")%>' ></iframe>
                                                                         
                             </ItemTemplate>
                             <EditItemTemplate>
 
-                                <iframe id="DisplayEditPdf" name="DisplayEditPdf" runat="server" src='<%# Eval("VatReceipt")%>' width="150px" height="200px" style="overflow: hidden"></iframe>
+                                <iframe id="DisplayEditPdf" name="DisplayEditPdf" runat="server" src='<%# Eval("VatReceipt")%>' ></iframe>
                                 <asp:Image ID="Image_EditVat" runat="server" ImageUrl='<%# Eval("VatReceipt") %>' Height="0px" Width="0px" />
 
                                 <br />
@@ -214,6 +219,7 @@
                <asp:Image ID="Image1" runat="server" Height="200px" Width="200px" ImageAlign="right"  Visible="false"/>
         </div>--%>
         </form>
+        
     </body>
     </html>
 </asp:Content>
