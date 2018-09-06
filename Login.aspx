@@ -75,7 +75,7 @@ img.avatar {
     </div>
 
     <div class="container">
-      <label for="uname"><b>Username</b></label>
+      <label for="uname"><b>UserId</b></label>
   
         <asp:TextBox ID="TextBox1" runat="server" CssClass="txtbox"></asp:TextBox> <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Please enter Username" ControlToValidate="TextBox1" ValidationGroup="Require" ForeColor="#FF3300" Font-Size="Small"></asp:RequiredFieldValidator> 
       
