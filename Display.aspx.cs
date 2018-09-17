@@ -63,7 +63,7 @@ public partial class Display : System.Web.UI.Page
         string downloadfilename = files[0].Substring(pos, files[0].Length - pos);
         int poss = files[1].LastIndexOf("/") + 1;
         string downloadfilenames = files[1].Substring(pos, files[1].Length - pos);
-        if (downloadfilename == "download.pdf"|| downloadfilenames == "download.pdf")
+        if (downloadfilename == "default.pdf"|| downloadfilenames == "default.pdf")
         { }
         else
         { 
@@ -134,8 +134,8 @@ public partial class Display : System.Web.UI.Page
                 else
                 {
 
-                    path = "/Upload/download.pdf";
-                    filename = "download.pdf";
+                    path = "/Upload/default.pdf";
+                    filename = "default.pdf";
                     lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                     lbl_image.ForeColor = System.Drawing.Color.Red;
 
@@ -156,8 +156,8 @@ public partial class Display : System.Web.UI.Page
             }
             else
             {
-                path = "/Upload/download.pdf";
-                filename = "download.pdf";
+                path = "/Upload/default.pdf";
+                filename = "default.pdf";
                 lbl_image.Text = "";
             }
         }
@@ -197,8 +197,8 @@ public partial class Display : System.Web.UI.Page
                 }
                 else
                 { 
-                Vatpath = "/Vat/download.pdf";
-                vatfilename = "download.pdf";
+                Vatpath = "/Vat/default.pdf";
+                vatfilename = "default.pdf";
                 lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vat.ForeColor = System.Drawing.Color.Red;
                 }
@@ -218,8 +218,8 @@ public partial class Display : System.Web.UI.Page
             }
             else
             {
-                Vatpath = "/Vat/download.pdf";
-                vatfilename = "download.pdf";
+                Vatpath = "/Vat/default.pdf";
+                vatfilename = "default.pdf";
                 lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vat.ForeColor = System.Drawing.Color.Red;
             }

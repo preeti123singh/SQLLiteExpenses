@@ -106,7 +106,7 @@ public partial class Report : System.Web.UI.Page
         int poss = files[1].LastIndexOf("/") + 1;
         string downloadfilenames = files[1].Substring(pos, files[1].Length - pos);
 
-        if (downloadfilename == "download.pdf" || downloadfilenames == "download.pdf")
+        if (downloadfilename == "default.pdf" || downloadfilenames == "default.pdf")
         { }
         else
         {
@@ -180,8 +180,8 @@ public partial class Report : System.Web.UI.Page
                     else
                     {
 
-                        path = "/Upload/download.pdf";
-                        filename = "download.pdf";
+                        path = "/Upload/default.pdf";
+                        filename = "default.pdf";
                         lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                         lbl_image.ForeColor = System.Drawing.Color.Red;
 
@@ -203,8 +203,8 @@ public partial class Report : System.Web.UI.Page
                 }
                 else
                 {
-                    path = "/Upload/download.pdf";
-                    filename = "download.pdf";
+                    path = "/Upload/default.pdf";
+                    filename = "default.pdf";
                     lbl_image.Text = "";
                 }
             }
@@ -245,8 +245,8 @@ public partial class Report : System.Web.UI.Page
                 }
                 else
                 {
-                    Vatpath = "/Vat/download.pdf";
-                    vatfilename = "download.pdf";
+                    Vatpath = "/Vat/default.pdf";
+                    vatfilename = "default.pdf";
                     lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                     lbl_vat.ForeColor = System.Drawing.Color.Red;
 
@@ -269,8 +269,8 @@ public partial class Report : System.Web.UI.Page
             }
             else
             {
-                Vatpath = "/Vat/download.pdf";
-                vatfilename = "download.pdf";
+                Vatpath = "/Vat/default.pdf";
+                vatfilename = "default.pdf";
                 lbl_vat.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vat.ForeColor = System.Drawing.Color.Red;
             }
@@ -598,7 +598,7 @@ public partial class Report : System.Web.UI.Page
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Comments", font)));
             PdfTable1.AddCell(PdfPCell);
-            PdfPCell = new PdfPCell(new Phrase(new Chunk("Filename", font)));
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("Receipt", font)));
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Item", font)));
             PdfTable1.AddCell(PdfPCell);
@@ -842,7 +842,7 @@ public partial class Report : System.Web.UI.Page
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("VatAmount", font)));
             PdfTable1.AddCell(PdfPCell);
-            PdfPCell = new PdfPCell(new Phrase(new Chunk("VatFilename", font)));
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("VatReceipt", font)));
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("PageNo", font)));
             PdfTable1.AddCell(PdfPCell);

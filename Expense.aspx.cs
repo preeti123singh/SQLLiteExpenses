@@ -132,8 +132,8 @@ public partial class Expense : System.Web.UI.Page
                 }
                 else
                 {
-                    Images = "/Upload/download.pdf";
-                    Filename = "download.pdf";
+                    Images = "/Upload/default.pdf";
+                    Filename = "default.pdf";
                     lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                     lbl_image.ForeColor = System.Drawing.Color.Red;
                 }
@@ -152,8 +152,8 @@ public partial class Expense : System.Web.UI.Page
             }
             else
             {
-                Images = "/Upload/download.pdf";
-                Filename = "download.pdf";
+                Images = "/Upload/default.pdf";
+                Filename = "default.pdf";
                 lbl_image.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_image.ForeColor = System.Drawing.Color.Red;
             }
@@ -325,8 +325,8 @@ public partial class Expense : System.Web.UI.Page
                 }
                 else
                 { 
-                Images = "/Vat/download.pdf";
-                VatFileName = "download.pdf";
+                Images = "/Vat/default.pdf";
+                VatFileName = "default.pdf";
                 lbl_vatImage.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vatImage.ForeColor = System.Drawing.Color.Red;
                 }
@@ -347,8 +347,8 @@ public partial class Expense : System.Web.UI.Page
             }
             else
             {
-                Images = "/Vat/download.pdf";
-                VatFileName = "download.pdf";
+                Images = "/Vat/default.pdf";
+                VatFileName = "default.pdf";
                 lbl_vatImage.Text = "Please upload image with .jpg,.jpeg,.png,.gif,.pdf extensions.";
                 lbl_vatImage.ForeColor = System.Drawing.Color.Red;
             }
