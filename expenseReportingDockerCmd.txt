@@ -1,0 +1,5 @@
+C:\GauravPal\ExpenseDB\Expense.db
+
+C:\\inetpub\\wwwroot\\SQLlite\\Expense.db
+
+docker.exe run --rm -it -p 8000:80 --cpu-count 4 --memory 4g -v C:\ExpenseDB:C:\inetpub\wwwroot\SQLlite -v C:\ExpenseDB\uploadedReceipt:C:\inetpub\wwwroot\Upload -v C:\ExpenseDB\uploadedVat:C:\inetpub\wwwroot\Vat  --name myExpenses expensecalculation:1.2
