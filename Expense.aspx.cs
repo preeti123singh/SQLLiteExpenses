@@ -22,8 +22,8 @@ public partial class Expense : System.Web.UI.Page
 
     protected void Page_Load(object sender, EventArgs e)
     {
-        Session["data_grid"] = "";
-        Session["valuegrid"] = "";
+        Session["data_grid"] = " ";
+        Session["valuegrid"] = " ";
         connection = (SQLiteConnection)Session["connection"];
 
         if (!Page.IsPostBack)
@@ -34,7 +34,8 @@ public partial class Expense : System.Web.UI.Page
     }
 
     public void PopulateDropdownitem()
-    {
+    {       
+
         var value = Session["item"];
 
 

@@ -24,7 +24,9 @@ public partial class Display : System.Web.UI.Page
     protected void Page_Load(object sender, EventArgs e)
     {
         con = (SQLiteConnection)Session["connection"];
-        Session["data_grid"]="";
+        Session["data_grid"]=null;
+        Session["item"] = null;
+        Session["Value"] = null;
         if (!Page.IsPostBack)
         {
             loaddata();
