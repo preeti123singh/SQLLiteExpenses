@@ -43,7 +43,7 @@ public partial class Display : System.Web.UI.Page
         Session["valuegrid"] = dt;
         if (ds.Tables[0].Rows.Count > 0)
         {
-           
+            
             GridView1.DataSource = dt;
             GridView1.DataBind();
             DataRow row = dt.Rows[0];
@@ -231,7 +231,7 @@ public partial class Display : System.Web.UI.Page
 
         GridView1.EditIndex = -1;
         con.Open();
-        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
+        var date = Convert.ToDateTime(textDate.Text).ToString("dd-MM-yyyy");
         using (SQLiteCommand cmd = new SQLiteCommand("update tbl_expenses set AmountPaid='" + textMoney.Text +
                                                                               "',payment='" + textpayment.Text +
                                                                               "',Description='" + textDescription.Text +

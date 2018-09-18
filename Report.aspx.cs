@@ -70,7 +70,7 @@ public partial class Report : System.Web.UI.Page
         DataTable dt = new DataTable();
         string query;
         var result = drp_month.Text;
-        query = "select * from tbl_expenses where strftime('%m', Date)='" + result + "'";
+        query = "select id,strftime('%d/%m/%Y',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where strftime('%m', Date)='" + result + "'";
         con.Open();
         SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
         adp = new SQLiteDataAdapter(sqlcmd);
@@ -215,7 +215,7 @@ public partial class Report : System.Web.UI.Page
         FileUpload VatFileUpload = (FileUpload)data_grid.Rows[e.RowIndex].FindControl("FileUpload2");
         string Vatext = System.IO.Path.GetExtension(VatFileUpload.PostedFile.FileName).ToLower();
         string Vatpath = "/Vat/";
-        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
+        var date = Convert.ToDateTime(textDate.Text).ToString("dd/MM/yyyy");
         if (VatFileUpload.HasFile)
         {
 
@@ -399,7 +399,7 @@ public partial class Report : System.Web.UI.Page
         string query;
         var Startdate = Convert.ToDateTime(txt_StartDate.Text).ToString("yyyy-MM-dd");
         var Enddate = Convert.ToDateTime(txt_Enddate.Text).ToString("yyyy-MM-dd");
-        query = "select * from tbl_expenses where date>= '" + Startdate + "' and " + "date<= '" + Enddate + "'";
+        query = "select id,strftime('%d/%m/%Y',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where date>= '" + Startdate + "' and " + "date<= '" + Enddate + "'";
         con.Open();
         SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
         adp = new SQLiteDataAdapter(sqlcmd);
@@ -435,7 +435,7 @@ public partial class Report : System.Web.UI.Page
         {
             result = "0";
         }
-        query = "select * from tbl_expenses where strftime('%Y', Date)='" + result + "'";
+        query = "select id,strftime('%d/%m/%Y',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where strftime('%Y', Date)='" + result + "'";
         con.Open();
         SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
         adp = new SQLiteDataAdapter(sqlcmd);
@@ -538,6 +538,7 @@ public partial class Report : System.Web.UI.Page
         data_grid.Columns[1].Visible = false;
         data_grid.Columns[0].Visible = false;
         data_grid.Columns[2].Visible = false;
+       
         StringWriter sw = new StringWriter();
         HtmlTextWriter hw = new HtmlTextWriter(sw);
         data_grid.RenderControl(hw);

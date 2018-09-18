@@ -42,7 +42,7 @@
                     <asp:CommandField ShowEditButton="true" ButtonType="Image"  EditImageUrl="~/Pics/NewEdit.png"  UpdateImageUrl="~/Pics/Update.png" CancelImageUrl="~/Pics/NewCancel.png" ItemStyle-Wrap="false"/>  
                         <asp:CommandField ShowDeleteButton="true" ButtonType="Image"  DeleteImageUrl="~/Pics/NewDelete.jpg"  ItemStyle-Wrap="false"/>
                      
-                    <asp:BoundField DataField="Date" HeaderText="Date" ItemStyle-HorizontalAlign="Center" >
+                    <asp:BoundField DataField="Date" HeaderText="Date" ItemStyle-HorizontalAlign="Center" DataFormatString="{0:dd/MM/yyyy}">
                             <ItemStyle HorizontalAlign="Center"></ItemStyle>
                     </asp:BoundField>   
                 
