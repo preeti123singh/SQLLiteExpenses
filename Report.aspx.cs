@@ -215,7 +215,7 @@ public partial class Report : System.Web.UI.Page
         FileUpload VatFileUpload = (FileUpload)data_grid.Rows[e.RowIndex].FindControl("FileUpload2");
         string Vatext = System.IO.Path.GetExtension(VatFileUpload.PostedFile.FileName).ToLower();
         string Vatpath = "/Vat/";
-        var date = Convert.ToDateTime(textDate.Text).ToString("dd/MM/yyyy");
+        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
         if (VatFileUpload.HasFile)
         {
 

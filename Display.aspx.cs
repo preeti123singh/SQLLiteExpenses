@@ -231,7 +231,7 @@ public partial class Display : System.Web.UI.Page
 
         GridView1.EditIndex = -1;
         con.Open();
-        var date = Convert.ToDateTime(textDate.Text).ToString("dd-MM-yyyy");
+        var date = Convert.ToDateTime(textDate.Text).ToString("yyyy-MM-dd");
         using (SQLiteCommand cmd = new SQLiteCommand("update tbl_expenses set AmountPaid='" + textMoney.Text +
                                                                               "',payment='" + textpayment.Text +
                                                                               "',Description='" + textDescription.Text +

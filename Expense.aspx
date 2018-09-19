@@ -122,7 +122,7 @@
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Please enter Amount" ControlToValidate="txt_Money" ValidationGroup="Require" ForeColor="#FF3300" Font-Size="Small"></asp:RequiredFieldValidator> 
                           <asp:RegularExpressionValidator id="RegularExpressionValidator1"
                    ControlToValidate="txt_Money" ForeColor="#FF3300"
-                   ValidationExpression="\d+" ValidationGroup="Require"
+                   ValidationExpression="[0-9]*\.?[0-9]*" ValidationGroup="Require"
                    Display="Static" Font-Size="Small"
                    EnableClientScript="true"
                    ErrorMessage="Please enter numbers only"
@@ -198,7 +198,14 @@
                 <tr>
                     <td>VAT Amount</td>
                     <td>
-                        <asp:TextBox ID="txt_Amount" runat="server" AutoCompleteType="Disabled" CssClass="txtbox"></asp:TextBox></td>
+                        <asp:TextBox ID="txt_Amount" runat="server" AutoCompleteType="Disabled" CssClass="txtbox"></asp:TextBox>
+                     <asp:RegularExpressionValidator id="RegularExpressionValidator2"
+                   ControlToValidate="txt_Amount" ForeColor="#FF3300"
+                   ValidationExpression="[0-9]*\.?[0-9]*" ValidationGroup="Require"
+                   Display="Static" Font-Size="Small"
+                   EnableClientScript="true"
+                   ErrorMessage="Please enter digits only"
+                   runat="server"/></td>
                 </tr>
                 <tr>
                     <td>VAT Receipt</td>
