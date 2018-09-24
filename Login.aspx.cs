@@ -24,7 +24,7 @@ public partial class Login : System.Web.UI.Page
     {
         try
         {
-            SQLiteConnection connection = new SQLiteConnection("Data Source=C:\\Users\\Preeti\\Documents\\Visual Studio 2015\\WebSites\\CalculateExpenseSQLLite\\SQLlite\\Expense.db;Version=3");
+            SQLiteConnection connection = new SQLiteConnection("Data Source=C:\\ExpenseCalculationIISHosting\\ExpenseDB\\Expense.db;Version=3");
             
                 connection.Open();
                 string uid = TextBox1.Text;

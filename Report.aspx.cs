@@ -483,15 +483,16 @@ public partial class Report : System.Web.UI.Page
     public int GetLastPageNoExpenseTableInPdf(DataTable dt1)
     {
         Document pdfDoc = new Document(PageSize.A4, 10f, 10f, 10f, 0f);
-        PdfPTable PdfTable1 = new PdfPTable(dt1.Columns.Count);
+        PdfPTable PdfTable1 = new PdfPTable(dt1.Columns.Count - 4);
         var writer = PdfWriter.GetInstance(pdfDoc, Response.OutputStream);
         pdfDoc.Open();
+        pdfDoc.NewPage();
         PdfTable1.WidthPercentage = 100f;
+        iTextSharp.text.Font font2 = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8f, iTextSharp.text.Font.BOLD | iTextSharp.text.Font.UNDERLINE, iTextSharp.text.BaseColor.RED);
         if (dt1 != null)
         {
-
             PdfPCell PdfPCell = null;
-            iTextSharp.text.Font font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 12f, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLUE);
+            iTextSharp.text.Font font = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 10f, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLUE);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Date", font)));
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("AmountPaid", font)));
@@ -502,6 +503,14 @@ public partial class Report : System.Web.UI.Page
             PdfTable1.AddCell(PdfPCell);
             PdfPCell = new PdfPCell(new Phrase(new Chunk("Comments", font)));
             PdfTable1.AddCell(PdfPCell);
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("Receipt", font)));
+            PdfTable1.AddCell(PdfPCell);
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("Item", font)));
+            PdfTable1.AddCell(PdfPCell);
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("VatAmount", font)));
+            PdfTable1.AddCell(PdfPCell);
+            PdfPCell = new PdfPCell(new Phrase(new Chunk("PageNo", font)));
+            PdfTable1.AddCell(PdfPCell);
             //How add the data from datatable to pdf table
             iTextSharp.text.Font font1 = new iTextSharp.text.Font(iTextSharp.text.Font.FontFamily.HELVETICA, 8f, iTextSharp.text.Font.BOLD, iTextSharp.text.BaseColor.BLACK);
 
@@ -510,16 +519,39 @@ public partial class Report : System.Web.UI.Page
                 for (int column = 0; column < dt1.Columns.Count; column++)
                 {
 
-                    PdfPCell = new PdfPCell(new Paragraph(new Chunk(dt1.Rows[rows][column].ToString(), font1)));
-                    PdfTable1.AddCell(PdfPCell);
+                    if (column == 7)
+                    {
+                        Chunk chunk = new Chunk("View", font2);
+                        //var des = new PdfDestination(PdfDestination.XYZ, 0, pdfDoc.PageSize.Height, 0.99f);
+                        //pageno = int.Parse(dt1.Rows[rows]["PageNo"].ToString());
+                        //PdfAction action = PdfAction.GotoLocalPage(pageno, des, writer);
+                        //chunk.SetAction(action);
+                        PdfPCell = new PdfPCell(new Paragraph(chunk));
+                        PdfTable1.AddCell(PdfPCell);
+                    }
+                    else
+                    {
+                        if (column == 0 || column == 6 || column == 10 || column == 11)
+                        {
+
+
+                        }
+                        else
+                        {
+
+                            PdfPCell = new PdfPCell(new Paragraph(new Chunk(dt1.Rows[rows][column].ToString(), font1)));
+                            PdfTable1.AddCell(PdfPCell);
+                        }
+                    }
 
                 }
             }
-            PdfTable1.SpacingBefore = 15f; // Give some space after the text or it may overlap the tabl    
+            PdfTable1.SpacingBefore = 15f;// Give some space after the text or it may overlap the tabl    
         }
-        pdfDoc.NewPage();
+        
         pdfDoc.Add(PdfTable1);
-        int currentPage = writer.PageNumber;
+       
+        int currentPage = writer.CurrentPageNumber + 1;
        
         pdfDoc.Close();
         return currentPage;
@@ -560,7 +592,7 @@ public partial class Report : System.Web.UI.Page
 
         List<string> ImageStr = GetPdfImagesInExpenseHTMLString(sw.ToString());    
         var unique_payments_Expense = new HashSet<string>(ImageStr);       
-        int startOfImages = GetLastPageNoExpenseTableInPdf(dt1) + 1;
+        int startOfImages = GetLastPageNoExpenseTableInPdf(dt1) ;
         Dictionary<int, string> dict = new Dictionary<int, string>();
         dict = ReturnDictionary(startOfImages, unique_payments_Expense);
 
@@ -580,7 +612,7 @@ public partial class Report : System.Web.UI.Page
             }
         }
 
-
+        
         PdfPTable PdfTable1 = new PdfPTable(dt1.Columns.Count - 4);
         PdfTable1.WidthPercentage = 100f;
         int pageno = 0;
@@ -644,10 +676,30 @@ public partial class Report : System.Web.UI.Page
             }
             PdfTable1.SpacingBefore = 15f; // Give some space after the text or it may overlap the table    
         }
-
-
-        pdfDoc.Add(PdfTable1);
-      
+        //Add WaterMark
+        string watermarkText = "10bitsSolutions";
+        float fontSize = 80;
+        float xPosition = 300;
+        float yPosition = 400;
+        float angle = 45;
+        try
+        {
+            PdfContentByte under = writer.DirectContentUnder;
+            BaseFont baseFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
+            under.BeginText();
+            under.SetColorFill(iTextSharp.text.pdf.CMYKColor.LIGHT_GRAY);
+            under.SetFontAndSize(baseFont, fontSize);
+            under.ShowTextAligned(PdfContentByte.ALIGN_CENTER, watermarkText, xPosition, yPosition, angle);
+            under.EndText();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+        }
+            //End Water mark
+            pdfDoc.Add(PdfTable1);
+           
+     
 
         PdfImportedPage page = null;
         PdfContentByte cb = writer.DirectContent;
@@ -671,8 +723,8 @@ public partial class Report : System.Web.UI.Page
 
         }
         dt1.Columns.Remove("PageNo");
-       
-       
+
+
         Session["data_grid"] = dt1;
         pdfDoc.Close();
         
@@ -800,7 +852,7 @@ public partial class Report : System.Web.UI.Page
         var unique_payments_Expense = new HashSet<string>(ImageVatStr);
        
 
-        int startOfImages = GetLastPageNoExpenseTableInPdf(dt1) + 1;
+        int startOfImages = GetLastPageNoExpenseTableInPdf(dt1);
         Dictionary<int, string> dict = new Dictionary<int, string>();
         dict = ReturnDictionary(startOfImages, unique_payments_Expense);
 
@@ -885,7 +937,27 @@ public partial class Report : System.Web.UI.Page
             }
             PdfTable1.SpacingBefore = 15f; // Give some space after the text or it may overlap the table   
         }
-
+        //Add WaterMark
+        string watermarkText = "10bitsSolutions";
+        float fontSize = 80;
+        float xPosition = 300;
+        float yPosition = 400;
+        float angle = 45;
+        try
+        {
+            PdfContentByte under = writer.DirectContentUnder;
+            BaseFont baseFont = BaseFont.CreateFont(BaseFont.HELVETICA, BaseFont.WINANSI, BaseFont.EMBEDDED);
+            under.BeginText();
+            under.SetColorFill(iTextSharp.text.pdf.CMYKColor.LIGHT_GRAY);
+            under.SetFontAndSize(baseFont, fontSize);
+            under.ShowTextAligned(PdfContentByte.ALIGN_CENTER, watermarkText, xPosition, yPosition, angle);
+            under.EndText();
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine(ex.Message);
+        }
+        //End Water mark
         pdfDoc.Add(PdfTable1);
 
         PdfImportedPage page = null;
