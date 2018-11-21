@@ -70,7 +70,7 @@ public partial class Report : System.Web.UI.Page
         DataTable dt = new DataTable();
         string query;
         var result = drp_month.Text;
-        query = "select id,strftime('%d/%m/%Y',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where strftime('%m', Date)='" + result + "'";
+        query = "select id,strftime('%Y/%m/%d',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where strftime('%m', Date)='" + result + "'"+ "order by date DESC";
         con.Open();
         SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
         adp = new SQLiteDataAdapter(sqlcmd);
@@ -399,7 +399,7 @@ public partial class Report : System.Web.UI.Page
         string query;
         var Startdate = Convert.ToDateTime(txt_StartDate.Text).ToString("yyyy-MM-dd");
         var Enddate = Convert.ToDateTime(txt_Enddate.Text).ToString("yyyy-MM-dd");
-        query = "select id,strftime('%d/%m/%Y',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where date>= '" + Startdate + "' and " + "date<= '" + Enddate + "'";
+        query = "select id,strftime('%Y/%m/%d',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where date>= '" + Startdate + "' and " + "date<= '" + Enddate + "'" + "order by date DESC";
         con.Open();
         SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
         adp = new SQLiteDataAdapter(sqlcmd);
@@ -435,7 +435,7 @@ public partial class Report : System.Web.UI.Page
         {
             result = "0";
         }
-        query = "select id,strftime('%d/%m/%Y',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where strftime('%Y', Date)='" + result + "'";
+        query = "select id,strftime('%Y/%m/%d',Date) as Date,AmountPaid,Payment,Description,Comments,Image,Filename,Item,VatAmount,VatReceipt,VatFileName from tbl_expenses where strftime('%Y', Date)='" + result + "'" + "order by date DESC";
         con.Open();
         SQLiteCommand sqlcmd = new SQLiteCommand(query, con);
         adp = new SQLiteDataAdapter(sqlcmd);
@@ -966,6 +966,7 @@ public partial class Report : System.Web.UI.Page
         foreach (string s in unique_payments_Expense)
         {
             PdfReader pdfReader = new PdfReader(s);
+           
             int numberOfPages = pdfReader.NumberOfPages;
 
             for (int i = 1; i <= numberOfPages; i++)

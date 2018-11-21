@@ -139,7 +139,9 @@
             <div style="margin-top: 100px; overflow: auto; height: 500px" id="autoScroll" runat="server" onscroll="javaascript:setScroll(this);">
 
 
-                <asp:GridView ID="data_grid" runat="server" DataKeyNames="id" AutoGenerateColumns="False" Width="100%" ShowHeaderWhenEmpty="True" OnRowCancelingEdit="data_grid_RowCancelingEdit" OnRowDeleting="data_grid_RowDeleting" OnRowEditing="data_grid_RowEditing" OnRowUpdating="data_grid_RowUpdating" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="data_grid_SelectedIndexChanged">
+                <asp:GridView ID="data_grid" runat="server" DataKeyNames="id" AutoGenerateColumns="False" Width="100%" ShowHeaderWhenEmpty="True" 
+                    OnRowCancelingEdit="data_grid_RowCancelingEdit" OnRowDeleting="data_grid_RowDeleting" OnRowEditing="data_grid_RowEditing" 
+                    OnRowUpdating="data_grid_RowUpdating" CellPadding="4" ForeColor="#333333" GridLines="None" OnSelectedIndexChanged="data_grid_SelectedIndexChanged">
                     <AlternatingRowStyle BackColor="White" Height="20px" ForeColor="#284775" />
 
                     <Columns>
